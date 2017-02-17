@@ -13,6 +13,7 @@ protocol YSDriveCoordinatorDelegate: class
     func driveCoordinatorDidFinish(driveVC: YSDriveCoordinator, error: YSErrorProtocol?)
     func driveCoordinatorDidSelectFile(_ viewModel: YSDriveViewModelProtocol, file: YSDriveFileProtocol)
     func driveCoordinatorDidRequestedLogin()
+    func driveViewControllerDidRequestedSearch()
 }
 
 class YSDriveCoordinator: NSObject, YSCoordinatorProtocol
@@ -31,9 +32,9 @@ class YSDriveCoordinator: NSObject, YSCoordinatorProtocol
     {
         let viewModel = YSDriveViewModel()
         YSAppDelegate.appDelegate().fileDownloader?.downloadsDelegate = viewModel
-        driveViewController.viewModel = viewModel
         viewModel.model = YSDriveModel(folder: folder)
         viewModel.coordinatorDelegate = self
+        driveViewController.viewModel = viewModel
     }
     
     func updateDownloadDelegate()
@@ -70,5 +71,10 @@ extension YSDriveCoordinator: YSDriveViewModelCoordinatorDelegate
     func driveViewModelDidFinish()
     {
         delegate?.driveCoordinatorDidFinish(driveVC: self, error: nil)
+    }
+    
+    func driveViewControllerDidRequestedSearch()
+    {
+        delegate?.driveViewControllerDidRequestedSearch()
     }
 }

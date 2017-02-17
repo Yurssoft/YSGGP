@@ -126,6 +126,11 @@ class YSDriveViewModel: YSDriveViewModelProtocol
         coordinatorDelegate?.driveViewModelDidFinish()
     }
     
+    func driveViewControllerDidRequestedSearch()
+    {
+        coordinatorDelegate?.driveViewControllerDidRequestedSearch()
+    }
+    
     func download(_ file : YSDriveFileProtocol)
     {
         model?.download(file)

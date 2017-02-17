@@ -103,4 +103,10 @@ extension YSDriveTopCoordinator : YSDriveCoordinatorDelegate
             navigationController?.pushViewController(driveTopVC, animated: true)
         }
     }
+    
+    func driveViewControllerDidRequestedSearch()
+    {
+        let searchCoordinator = YSDriveSearchCoordinator()
+        searchCoordinator.start(navigationController: navigationController, storyboard: storyboard)
+    }
 }

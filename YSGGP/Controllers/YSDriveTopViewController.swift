@@ -25,7 +25,7 @@ class YSDriveTopViewController: UIViewController
     
     fileprivate let toolbarViewBottomConstraintVisibleConstant = 0 as CGFloat
     fileprivate let toolbarViewBottomConstraintHiddenConstant = -100 as CGFloat
-    //TODO: implement search
+    
     override func viewDidLoad()
     {
         super.viewDidLoad()
@@ -53,6 +53,10 @@ class YSDriveTopViewController: UIViewController
     {
         driveVC?.viewModel = nil
         driveVC = nil
+    }
+    @IBAction func searchButtonTapped(_ sender: UIBarButtonItem)
+    {
+        driveVC?.viewModel?.driveViewControllerDidRequestedSearch()
     }
     
     @IBAction func editButtonTapped(_ sender: UIBarButtonItem)

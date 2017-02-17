@@ -365,6 +365,11 @@ extension YSDriveViewController : DZNEmptyDataSetSource
 
 extension YSDriveViewController : DZNEmptyDataSetDelegate
 {
+    func emptyDataSetShouldDisplay(_ scrollView: UIScrollView!) -> Bool
+    {
+        guard let viewModel = viewModel, !viewModel.isLoggedIn else { return false }
+        return true
+    }
     func emptyDataSet(_ scrollView: UIScrollView!, didTap button: UIButton!)
     {
         viewModel?.loginToDrive()
