@@ -7,25 +7,70 @@
 //
 
 import UIKit
+import AVKit
+import AVFoundation
+import SwiftMessages
 
 class YSDriveSearchCoordinator : YSCoordinatorProtocol
 {
-    fileprivate var navigationController: UINavigationController?
+    fileprivate var searchNavigationController: UINavigationController?
+    fileprivate var driveCoordinator : YSDriveTopCoordinator = YSDriveTopCoordinator()
+    fileprivate var storyboard: UIStoryboard?
     
     func start() { }
     
     func start(navigationController: UINavigationController?, storyboard: UIStoryboard?)
     {
-        self.navigationController = navigationController
+        self.storyboard = storyboard
         let searchControllerNavigation = storyboard?.instantiateViewController(withIdentifier: YSConstants.kDriveSearchNavigation) as! UINavigationController
         let searchController = searchControllerNavigation.viewControllers.first as! YSDriveSearchController
         
         searchController.viewModel = YSDriveSearchViewModel()
         searchController.viewModel?.model = YSDriveSearchModel()
-//        searchController.viewModel?a.coordinatorDelegate = self
+        searchController.viewModel?.coordinatorDelegate = self
         
         navigationController?.present(searchControllerNavigation, animated: true)
+        searchNavigationController = searchControllerNavigation
     }
 }
 
-//extension YSDriveSearchCoordinator : 
+extension YSDriveSearchCoordinator : YSDriveSearchViewModelCoordinatorDelegate
+{
+    func searchViewModelDidSelectFile(_ viewModel: YSDriveSearchViewModelProtocol, file: YSDriveFileProtocol)
+    {
+        if file.isAudio
+        {
+            if let url = file.localFilePath(), file.localFileExists()
+            {
+                let player = AVPlayer(url: url as URL)
+                let playerViewController = AVPlayerViewController()
+                playerViewController.player = player
+                searchNavigationController?.present(playerViewController, animated: true)
+                {
+                    playerViewController.player!.play()
+                }
+            }
+            else
+            {
+                let error = YSError(errorType: YSErrorType.couldNotDownloadFile, messageType: Theme.warning, title: "Could not play song", message: "No local copy", buttonTitle: "Download")
+                viewModel.viewDelegate?.downloadErrorDidChange(viewModel: viewModel, error: error, file: file)
+            }
+        }
+        else
+        {
+            let driveTopVC = storyboard?.instantiateViewController(withIdentifier: YSDriveTopViewController.nameOfClass) as! YSDriveTopViewController
+            searchNavigationController?.pushViewController(driveTopVC, animated: true)
+            let ysFolder = YSFolder()
+            ysFolder.folderID = file.fileDriveIdentifier
+            ysFolder.folderName = file.fileName
+            driveCoordinator.folder = ysFolder
+            driveCoordinator.start(driveTopVC: driveTopVC)
+        }
+    }
+    
+    func searchViewModelDidFinish()
+    {
+        //TODO: check if no leaks
+        YSAppDelegate.appDelegate().searchCoordinator = nil
+    }
+}

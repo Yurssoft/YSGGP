@@ -39,6 +39,12 @@ class YSDriveSearchController : UITableViewController
         tableView.register(nib, forCellReuseIdentifier: YSDriveFileTableViewCell.nameOfClass)
     }
     
+    override func viewWillDisappear(_ animated: Bool)
+    {
+        super.viewWillDisappear(animated)
+        viewModel?.searchViewControllerDidFinish()
+    }
+    
     @IBAction func doneButtonTapped(_ sender: UIBarButtonItem)
     {
         navigationController?.dismiss(animated: true)
@@ -70,6 +76,12 @@ class YSDriveSearchController : UITableViewController
         let download = viewModel?.download(for: file!)
         cell.configureForDrive(file, self, download)
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
+    {
+        viewModel?.useFile(at: (indexPath as NSIndexPath).row)
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 
@@ -114,6 +126,31 @@ extension YSDriveSearchController : YSDriveSearchViewModelViewDelegate
         default:
             print("error")
             break
+        }
+        var messageConfig = SwiftMessages.Config()
+        messageConfig.duration = .forever
+        messageConfig.ignoreDuplicates = false
+        messageConfig.presentationContext = .window(windowLevel: UIWindowLevelStatusBar)
+        SwiftMessages.show(config: messageConfig, view: message)
+    }
+    
+    func downloadErrorDidChange(viewModel: YSDriveSearchViewModelProtocol, error: YSErrorProtocol, file : YSDriveFileProtocol)
+    {
+        let message = MessageView.viewFromNib(layout: .CardView)
+        message.configureTheme(error.messageType)
+        message.configureDropShadow()
+        message.configureContent(title: error.title, body: error.message)
+        message.button?.setTitle(error.buttonTitle, for: UIControlState.normal)
+        switch error.errorType
+        {
+        case .couldNotDownloadFile:
+            message.buttonTapHandler =
+                { _ in
+                    self.downloadButtonPressed(file)
+                    SwiftMessages.hide()
+            }
+            break
+        default: break
         }
         var messageConfig = SwiftMessages.Config()
         messageConfig.duration = .forever

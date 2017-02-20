@@ -19,6 +19,7 @@ class YSAppDelegate: UIResponder, UIApplicationDelegate
     var backgroundSession : URLSession?
     var backgroundSessionCompletionHandler: (() -> Void)?
     var fileDownloader : YSDriveFileDownloader?
+    var searchCoordinator : YSDriveSearchCoordinator?
     var playerCoordinator : YSPlayerCoordinator = YSPlayerCoordinator()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool

@@ -72,10 +72,8 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
     
     func useFile(at index: Int)
     {
-        if let coordinatorDelegate = coordinatorDelegate, index < files.count
-        {
-            coordinatorDelegate.searchViewModelDidSelectFile(self, file: files[index])
-        }
+        guard let coordinatorDelegate = coordinatorDelegate, index < files.count else { return }
+        coordinatorDelegate.searchViewModelDidSelectFile(self, file: files[index])
     }
     
     func getFiles(completion: @escaping CompletionHandler)

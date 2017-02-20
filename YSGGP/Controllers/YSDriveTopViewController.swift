@@ -33,6 +33,11 @@ class YSDriveTopViewController: UIViewController
         driveVC?.toolbarView.ysToolbarDelegate = driveVC
         driveVC?.containingViewControllerViewDidLoad()
         driveVCReadyDelegate?.driveViewControllerDidLoaded(driveVC: driveVC!, navigationController: navigationController!)
+        
+        driveVC?.selectedIndexes.removeAll()
+        driveVC?.setEditing(false, animated: false)
+        toolbarView?.isHidden = true
+        tabBarController?.setTabBarVisible(isVisible: false, animated: false, completion:nil)
     }
     
     override func viewWillAppear(_ animated: Bool)

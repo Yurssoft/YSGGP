@@ -12,6 +12,7 @@ protocol YSDriveSearchViewModelViewDelegate: class
 {
     func filesDidChange(viewModel: YSDriveSearchViewModelProtocol)
     func errorDidChange(viewModel: YSDriveSearchViewModelProtocol, error: YSErrorProtocol)
+    func downloadErrorDidChange(viewModel: YSDriveSearchViewModelProtocol, error: YSErrorProtocol, file : YSDriveFileProtocol)
 }
 
 protocol YSDriveSearchViewModelCoordinatorDelegate: class
