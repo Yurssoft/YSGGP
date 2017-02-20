@@ -8,9 +8,15 @@
 
 import Foundation
 
-typealias DriveSearchCompletionHandler = ([YSDriveFileProtocol], YSErrorProtocol?) -> Swift.Void
+typealias DriveSearchCompletionHandler = ([YSDriveFileProtocol], String, YSErrorProtocol?) -> Swift.Void
 
 protocol YSDriveSearchModelProtocol
 {
-    func getFiles(for searchTerm: String, _ completionHandler: @escaping DriveSearchCompletionHandler)
+    func getFiles(for searchTerm: String, nextPageToken: String, _ completionHandler: @escaping DriveSearchCompletionHandler)
+    
+    func download(_ file : YSDriveFileProtocol)
+    
+    func stopDownload(_ file : YSDriveFileProtocol)
+    
+    func download(for file: YSDriveFileProtocol) -> YSDownloadProtocol?
 }

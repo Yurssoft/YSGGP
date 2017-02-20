@@ -62,6 +62,8 @@
 		50BDD1611E57191C00ECA29D /* YSDriveSearchCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50BDD1601E57191C00ECA29D /* YSDriveSearchCoordinator.swift */; };
 		50BDD1631E571C4F00ECA29D /* YSDriveSearchModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50BDD1621E571C4F00ECA29D /* YSDriveSearchModelProtocol.swift */; };
 		50BDD1651E571D6B00ECA29D /* YSDriveSearchModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50BDD1641E571D6B00ECA29D /* YSDriveSearchModel.swift */; };
+		50BDD1671E5B083900ECA29D /* YSDriveSearchViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50BDD1661E5B083900ECA29D /* YSDriveSearchViewModelProtocol.swift */; };
+		50BDD1691E5B0BD400ECA29D /* YSDriveSearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50BDD1681E5B0BD400ECA29D /* YSDriveSearchViewModel.swift */; };
 		50C22DCF1DDC5D890029E399 /* YSFilesMetadataDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C22DCE1DDC5D890029E399 /* YSFilesMetadataDownloader.swift */; };
 		50C22DD11DDC623D0029E399 /* YSCredentialManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C22DD01DDC623D0029E399 /* YSCredentialManager.swift */; };
 		50C22DD31DDC675B0029E399 /* YSNetworkResponseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C22DD21DDC675B0029E399 /* YSNetworkResponseManager.swift */; };
@@ -183,6 +185,8 @@
 		50BDD1601E57191C00ECA29D /* YSDriveSearchCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YSDriveSearchCoordinator.swift; sourceTree = "<group>"; };
 		50BDD1621E571C4F00ECA29D /* YSDriveSearchModelProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YSDriveSearchModelProtocol.swift; sourceTree = "<group>"; };
 		50BDD1641E571D6B00ECA29D /* YSDriveSearchModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YSDriveSearchModel.swift; sourceTree = "<group>"; };
+		50BDD1661E5B083900ECA29D /* YSDriveSearchViewModelProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YSDriveSearchViewModelProtocol.swift; sourceTree = "<group>"; };
+		50BDD1681E5B0BD400ECA29D /* YSDriveSearchViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YSDriveSearchViewModel.swift; sourceTree = "<group>"; };
 		50C22DCE1DDC5D890029E399 /* YSFilesMetadataDownloader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YSFilesMetadataDownloader.swift; sourceTree = "<group>"; };
 		50C22DD01DDC623D0029E399 /* YSCredentialManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YSCredentialManager.swift; sourceTree = "<group>"; };
 		50C22DD21DDC675B0029E399 /* YSNetworkResponseManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YSNetworkResponseManager.swift; sourceTree = "<group>"; };
@@ -229,6 +233,7 @@
 			isa = PBXGroup;
 			children = (
 				500B6C251D93EDCF003996CA /* YSDriveViewModelProtocol.swift */,
+				50BDD1661E5B083900ECA29D /* YSDriveSearchViewModelProtocol.swift */,
 				501F14541DF71C3C009FB868 /* YSPlaylistViewModelProtocol.swift */,
 				508EFC1F1DB52C8600ED5CFB /* YSSettingsViewModelProtocol.swift */,
 				509E55881E13FCF600C22489 /* YSPlayerViewModelProtocol.swift */,
@@ -273,6 +278,7 @@
 			children = (
 				500B6C271D93EDD8003996CA /* Protocols */,
 				500B6C231D93ED98003996CA /* YSDriveViewModel.swift */,
+				50BDD1681E5B0BD400ECA29D /* YSDriveSearchViewModel.swift */,
 				501F14521DF71C09009FB868 /* YSPlaylistViewModel.swift */,
 				508EFC211DB52D7C00ED5CFB /* YSSettingsViewModel.swift */,
 				509E558A1E13FE5700C22489 /* YSPlayerViewModel.swift */,
@@ -740,6 +746,7 @@
 				503BC17A1DB79ED4000D5BA1 /* YSErrorProtocol.swift in Sources */,
 				50BDD1651E571D6B00ECA29D /* YSDriveSearchModel.swift in Sources */,
 				50C22DCF1DDC5D890029E399 /* YSFilesMetadataDownloader.swift in Sources */,
+				50BDD1671E5B083900ECA29D /* YSDriveSearchViewModelProtocol.swift in Sources */,
 				504111011D9C00E200BE3B0C /* YSConstants.swift in Sources */,
 				504110FF1D9BF5BD00BE3B0C /* YSTabBarControllerExtension.swift in Sources */,
 				50BDD1611E57191C00ECA29D /* YSDriveSearchCoordinator.swift in Sources */,
@@ -766,6 +773,7 @@
 				50083B6C1DDCA2CD009B306D /* YSDateExtension.swift in Sources */,
 				509E55831E13F4C300C22489 /* YSPlayerCoordinator.swift in Sources */,
 				503AF1691E1FDBF9000E5493 /* SwiftyTimer.swift in Sources */,
+				50BDD1691E5B0BD400ECA29D /* YSDriveSearchViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

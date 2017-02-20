@@ -19,7 +19,7 @@ class YSSettingsCoordinator: YSCoordinatorProtocol
     
     func start()
     {
-        let viewModel =  YSSettingsViewModel()
+        let viewModel = YSSettingsViewModel()
         settingsViewController?.viewModel = viewModel
         viewModel.model = YSSettingsModel()
     }

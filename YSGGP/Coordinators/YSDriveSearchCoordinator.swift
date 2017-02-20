@@ -20,6 +20,12 @@ class YSDriveSearchCoordinator : YSCoordinatorProtocol
         let searchControllerNavigation = storyboard?.instantiateViewController(withIdentifier: YSConstants.kDriveSearchNavigation) as! UINavigationController
         let searchController = searchControllerNavigation.viewControllers.first as! YSDriveSearchController
         
+        searchController.viewModel = YSDriveSearchViewModel()
+        searchController.viewModel?.model = YSDriveSearchModel()
+//        searchController.viewModel?a.coordinatorDelegate = self
+        
         navigationController?.present(searchControllerNavigation, animated: true)
     }
 }
+
+//extension YSDriveSearchCoordinator : 

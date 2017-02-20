@@ -11,7 +11,6 @@ import SwiftMessages
 
 class YSDriveViewModel: YSDriveViewModelProtocol
 {
-
     var isLoggedIn: Bool
     {
        return (model?.isLoggedIn)!
