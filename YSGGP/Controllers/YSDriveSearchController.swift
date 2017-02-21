@@ -9,11 +9,11 @@
 import UIKit
 import SwiftMessages
 
-//TODO: add sections - all files folders
+//TODO: add sections - all, files, folders
 class YSDriveSearchController : UITableViewController
 {
     var viewModel: YSDriveSearchViewModelProtocol?
-        {
+    {
         willSet
         {
             viewModel?.viewDelegate = nil
@@ -37,17 +37,14 @@ class YSDriveSearchController : UITableViewController
         let bundle = Bundle(for: YSDriveFileTableViewCell.self)
         let nib = UINib(nibName: YSDriveFileTableViewCell.nameOfClass, bundle: bundle)
         tableView.register(nib, forCellReuseIdentifier: YSDriveFileTableViewCell.nameOfClass)
-    }
-    
-    override func viewWillDisappear(_ animated: Bool)
-    {
-        super.viewWillDisappear(animated)
-        viewModel?.searchViewControllerDidFinish()
+        
+        viewModel?.getFiles(completion: {_ in })
     }
     
     @IBAction func doneButtonTapped(_ sender: UIBarButtonItem)
     {
         navigationController?.dismiss(animated: true)
+        viewModel?.searchViewControllerDidFinish()
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int
@@ -80,6 +77,7 @@ class YSDriveSearchController : UITableViewController
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     {
+        searchController.isActive = false
         viewModel?.useFile(at: (indexPath as NSIndexPath).row)
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -124,7 +122,7 @@ extension YSDriveSearchController : YSDriveSearchViewModelViewDelegate
             }
             break
         default:
-            print("error")
+            print("error", #function)
             break
         }
         var messageConfig = SwiftMessages.Config()
@@ -164,6 +162,7 @@ extension YSDriveSearchController : UISearchResultsUpdating
 {
     func updateSearchResults(for searchController: UISearchController)
     {
-        viewModel?.searchTerm = searchController.searchBar.text ?? ""
+        guard var viewModel = viewModel, let searchText = searchController.searchBar.text, searchText.characters.count > 1 else { return }
+        viewModel.searchTerm = searchText
     }
 }
