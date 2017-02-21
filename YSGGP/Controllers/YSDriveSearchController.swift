@@ -75,6 +75,14 @@ class YSDriveSearchController : UITableViewController
         return cell
     }
     
+    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath)
+    {
+        if let viewModel = viewModel, indexPath.row > viewModel.numberOfFiles - 5
+        {
+            viewModel.getNextPartOfFiles()
+        }
+    }
+    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     {
         searchController.isActive = false

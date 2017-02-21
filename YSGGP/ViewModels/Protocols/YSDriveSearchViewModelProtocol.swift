@@ -31,6 +31,7 @@ protocol YSDriveSearchViewModelProtocol
     var error : YSErrorProtocol { get }
     var searchTerm : String { get set }
     
+    func getNextPartOfFiles()
     func file(at index: Int) -> YSDriveFileProtocol?
     func download(for file: YSDriveFileProtocol) -> YSDownloadProtocol?
     func useFile(at index: Int)

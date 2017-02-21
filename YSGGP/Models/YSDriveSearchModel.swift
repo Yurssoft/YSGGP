@@ -18,7 +18,7 @@ class YSDriveSearchModel : YSDriveSearchModelProtocol
             url.append("nextPageToken='\(nextPageToken)'&")
         }
         let searchTerm = searchTerm.replacingOccurrences(of: " ", with: "+")
-        url.append("corpus=user&orderBy=folder,name&pageSize=2&q=name+contains+'\(searchTerm)'+and+(mimeType+contains+'folder'+or+mimeType+contains+'audio')+and+trashed=false&spaces=drive&fields=nextPageToken,files(id,+name,+size,+mimeType)&key=AIzaSyCMsksSn6-1FzYhN49uDAzN83HGvFVXqaU")
+        url.append("corpus=user&orderBy=folder,name&pageSize=20&q=name+contains+'\(searchTerm)'+and+(mimeType+contains+'folder'+or+mimeType+contains+'audio')+and+trashed=false&spaces=drive&fields=nextPageToken,files(id,+name,+size,+mimeType)&key=AIzaSyCMsksSn6-1FzYhN49uDAzN83HGvFVXqaU")
         YSFilesMetadataDownloader.downloadFilesList(for: url)
         { filesDictionary, error in
             if let err = error

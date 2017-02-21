@@ -46,7 +46,7 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
     }
     
     fileprivate var files: [YSDriveFileProtocol] = []
-        {
+    {
         didSet
         {
             viewDelegate?.filesDidChange(viewModel: self)
@@ -55,6 +55,13 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
     
     fileprivate var nextPageToken: String = ""
     
+    func getNextPartOfFiles()
+    {
+        getFiles
+            { (error) in
+                self.viewDelegate?.filesDidChange(viewModel: self)
+        }
+    }
     
     func file(at index: Int) -> YSDriveFileProtocol?
     {
@@ -81,9 +88,9 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
         isDownloadingMetadata = true
         model?.getFiles(for: searchTerm, nextPageToken: nextPageToken)
             { (files, nextPageToken, error) in
+                self.nextPageToken.characters.count < 1 ? self.files = files : self.files.append(contentsOf: files)
                 self.nextPageToken = nextPageToken
                 self.isDownloadingMetadata = false
-                self.files = files
                 self.error = error!
                 completion(error)
         }
