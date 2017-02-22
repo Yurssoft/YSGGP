@@ -133,7 +133,7 @@ class YSPlaylistViewModel : YSPlaylistViewModelProtocol
 
 extension YSPlaylistViewModel : YSDriveFileDownloaderDelegate
 {
-    func downloadDidChanged(_ download : YSDownloadProtocol,_ error: YSErrorProtocol?)
+    func downloadDidChange(_ download : YSDownloadProtocol,_ error: YSErrorProtocol?)
     {
         model = YSPlaylistAndPlayerModel()
     }

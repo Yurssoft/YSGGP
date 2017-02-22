@@ -177,7 +177,7 @@ class YSDriveViewModel: YSDriveViewModelProtocol
 
 extension YSDriveViewModel : YSDriveFileDownloaderDelegate
 {
-    func downloadDidChanged(_ download : YSDownloadProtocol,_ error: YSErrorProtocol?)
+    func downloadDidChange(_ download : YSDownloadProtocol,_ error: YSErrorProtocol?)
     {
         DispatchQueue.main.async
             {
@@ -191,10 +191,3 @@ extension YSDriveViewModel : YSDriveFileDownloaderDelegate
         }
     }
 }
-
-
-
-
-
-
-

@@ -13,7 +13,7 @@ import ReachabilitySwift
 
 protocol YSDriveFileDownloaderDelegate: class
 {
-    func downloadDidChanged(_ download : YSDownloadProtocol,_ error: YSErrorProtocol?)
+    func downloadDidChange(_ download : YSDownloadProtocol,_ error: YSErrorProtocol?)
 }
 
 class YSDriveFileDownloader : NSObject
@@ -75,7 +75,7 @@ class YSDriveFileDownloader : NSObject
                 downloadTask.resume()
                 download.downloadStatus = .downloading(progress: 0.0)
                 self.downloads[url] = download
-                self.downloadsDelegate?.downloadDidChanged(download, nil)
+                self.downloadsDelegate?.downloadDidChange(download, nil)
             }
         }
     }
@@ -100,7 +100,7 @@ class YSDriveFileDownloader : NSObject
         var download = YSDownload(file: file)
         download.downloadStatus = .pending
         downloads[file.fileUrl()] = download
-        downloadsDelegate?.downloadDidChanged(download, nil)
+        downloadsDelegate?.downloadDidChange(download, nil)
         downloadNextFile()
     }
     
@@ -126,7 +126,7 @@ class YSDriveFileDownloader : NSObject
         if let download = downloads[file.fileUrl()]
         {
             download.downloadTask?.cancel()
-            downloadsDelegate?.downloadDidChanged(download, nil)
+            downloadsDelegate?.downloadDidChange(download, nil)
             downloads[file.fileUrl()] = nil
             downloadNextFile()
         }
@@ -159,7 +159,7 @@ extension YSDriveFileDownloader: URLSessionDownloadDelegate
         {
             if let err = YSNetworkResponseManager.validateDownloadTask(downloadTask.response, error: nil, fileName: download.file.fileName)
             {
-                downloadsDelegate?.downloadDidChanged(download, err)
+                downloadsDelegate?.downloadDidChange(download, err)
                 downloads[url] = nil
                 return
             }
@@ -179,14 +179,14 @@ extension YSDriveFileDownloader: URLSessionDownloadDelegate
                 
                 let errorMessage = YSError(errorType: YSErrorType.couldNotDownloadFile, messageType: Theme.error, title: "Error", message: "Could not copy file \(download.file.fileName)", buttonTitle: "Try again", debugInfo: error.localizedDescription)
                 
-                downloadsDelegate?.downloadDidChanged(download, errorMessage)
+                downloadsDelegate?.downloadDidChange(download, errorMessage)
                 downloads[url] = nil
                 return
             }
             _ = download.file.updateFileSize()
-            playlistDelegate?.downloadDidChanged(download, nil)
-            playerDelegate?.downloadDidChanged(download, nil)
-            downloadsDelegate?.downloadDidChanged(download, nil)
+            playlistDelegate?.downloadDidChange(download, nil)
+            playerDelegate?.downloadDidChange(download, nil)
+            downloadsDelegate?.downloadDidChange(download, nil)
             downloads[url] = nil
             downloadNextFile()
         }
@@ -201,7 +201,7 @@ extension YSDriveFileDownloader: URLSessionDownloadDelegate
             let totalSize = ByteCountFormatter.string(fromByteCount: totalBytesExpectedToWrite, countStyle: ByteCountFormatter.CountStyle.binary)
             download.totalSize = totalSize
             downloads[url] = download
-            downloadsDelegate?.downloadDidChanged(download, nil)
+            downloadsDelegate?.downloadDidChange(download, nil)
         }
     }
     
@@ -219,7 +219,7 @@ extension YSDriveFileDownloader: URLSessionDownloadDelegate
             }
             var yserror : YSErrorProtocol
             yserror = YSError(errorType: YSErrorType.couldNotDownloadFile, messageType: Theme.error, title: "Error", message: "Couldn't download \(download.file.fileName)", buttonTitle: "Try Again", debugInfo: error.localizedDescription)
-            downloadsDelegate?.downloadDidChanged(download, yserror)
+            downloadsDelegate?.downloadDidChange(download, yserror)
             downloads[download.file.fileUrl()] = nil
         }
     }

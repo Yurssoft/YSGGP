@@ -25,10 +25,11 @@ class YSDriveSearchCoordinator : YSCoordinatorProtocol
         let searchControllerNavigation = storyboard?.instantiateViewController(withIdentifier: YSConstants.kDriveSearchNavigation) as! UINavigationController
         let searchController = searchControllerNavigation.viewControllers.first as! YSDriveSearchController
         
-        searchController.viewModel = YSDriveSearchViewModel()
-        searchController.viewModel?.model = YSDriveSearchModel()
-        searchController.viewModel?.coordinatorDelegate = self
-        
+        let viewModel = YSDriveSearchViewModel()
+        viewModel.model = YSDriveSearchModel()
+        YSAppDelegate.appDelegate().fileDownloader?.downloadsDelegate = viewModel
+        viewModel.coordinatorDelegate = self
+        searchController.viewModel = viewModel
         navigationController?.present(searchControllerNavigation, animated: true)
         searchNavigationController = searchControllerNavigation
     }

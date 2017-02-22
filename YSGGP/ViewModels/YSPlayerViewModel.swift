@@ -371,7 +371,7 @@ class YSPlayerViewModel: NSObject, YSPlayerViewModelProtocol, AVAudioPlayerDeleg
 
 extension YSPlayerViewModel : YSDriveFileDownloaderDelegate
 {
-    func downloadDidChanged(_ download : YSDownloadProtocol,_ error: YSErrorProtocol?)
+    func downloadDidChange(_ download : YSDownloadProtocol,_ error: YSErrorProtocol?)
     {
         getFiles()
     }

@@ -77,10 +77,11 @@ class YSDriveSearchController : UITableViewController
     
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath)
     {
-        if let viewModel = viewModel, indexPath.row > viewModel.numberOfFiles - 5
-        {
-            viewModel.getNextPartOfFiles()
-        }
+        //TODO: manage next page token
+//        if let viewModel = viewModel, indexPath.row > viewModel.numberOfFiles - 5
+//        {
+//            viewModel.getNextPartOfFiles()
+//        }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
@@ -163,6 +164,25 @@ extension YSDriveSearchController : YSDriveSearchViewModelViewDelegate
         messageConfig.ignoreDuplicates = false
         messageConfig.presentationContext = .window(windowLevel: UIWindowLevelStatusBar)
         SwiftMessages.show(config: messageConfig, view: message)
+    }
+    
+    func downloadErrorDidChange(viewModel: YSDriveSearchViewModelProtocol, error: YSErrorProtocol, download : YSDownloadProtocol)
+    {
+        downloadErrorDidChange(viewModel: viewModel, error: error, file: download.file)
+    }
+    
+    func reloadFileDownload(at index: Int, viewModel: YSDriveSearchViewModelProtocol)
+    {
+        DispatchQueue.main.async
+        {
+                let indexPath = IndexPath.init(row: index, section: 0)
+                if let cell = self.tableView.cellForRow(at: indexPath) as? YSDriveFileTableViewCell
+                {
+                    let file = viewModel.file(at: indexPath.row)
+                    let download = viewModel.download(for: file!)
+                    cell.configureForDrive(file, self, download)
+                }
+        }
     }
 }
 
