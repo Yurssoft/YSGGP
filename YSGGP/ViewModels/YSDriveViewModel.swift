@@ -33,6 +33,13 @@ class YSDriveViewModel: YSDriveViewModelProtocol
     }
 
     weak var viewDelegate: YSDriveViewModelViewDelegate?
+    {
+        didSet
+        {
+            viewDelegate?.metadataDownloadStatusDidChange(viewModel: self)
+        }
+    }
+    
     var coordinatorDelegate: YSDriveViewModelCoordinatorDelegate?
     
     fileprivate var files: [YSDriveFileProtocol] = []
