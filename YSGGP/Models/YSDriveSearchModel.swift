@@ -15,17 +15,16 @@ class YSDriveSearchModel : YSDriveSearchModelProtocol
         var url = "\(YSConstants.kDriveAPIEndpoint)files?"
         if nextPageToken.characters.count > 0
         {
-            //TODO: manage next page token
-//            let encodedNextPageToken = CFURLCreateStringByAddingPercentEscapes(
-//                nil,
-//                nextPageToken as CFString!,
-//                nil,
-//                "!*'();:@&=+$,/?%#[]" as CFString!,
-//                CFStringBuiltInEncodings.ASCII.rawValue
-//            )!
-//            url.append("nextPageToken='\(encodedNextPageToken)'&")
+            let encodedNextPageToken = CFURLCreateStringByAddingPercentEscapes(
+                nil,
+                nextPageToken as CFString!,
+                nil,
+                "!'();:@&=+$,/?%#[]" as CFString!,
+                CFStringBuiltInEncodings.ASCII.rawValue
+            )!
+            url.append("pageToken=\(encodedNextPageToken)&")
         }
-        url.append("corpus=user&orderBy=folder,name&pageSize=20&q=SEARCH_CONTAINS(mimeType+contains+'folder'+or+mimeType+contains+'audio')+and+trashed=false&spaces=drive&fields=nextPageToken,files(id,+name,+size,+mimeType)&key=AIzaSyCMsksSn6-1FzYhN49uDAzN83HGvFVXqaU")
+        url.append("corpus=user&orderBy=folder,name&pageSize=400&q=SEARCH_CONTAINS(mimeType+contains+'folder'+or+mimeType+contains+'audio')+and+trashed=false&spaces=drive&fields=nextPageToken,files(id,+name,+size,+mimeType)&key=AIzaSyCMsksSn6-1FzYhN49uDAzN83HGvFVXqaU")
         let searchTermClean = searchTerm.replacingOccurrences(of: " ", with: "")
         if searchTermClean.characters.count > 0
         {

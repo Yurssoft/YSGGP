@@ -55,11 +55,25 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
     
     fileprivate var nextPageToken: String = ""
     
+    var isDownloadingNextPageOfFiles: Bool = false
+    {
+        didSet
+        {
+            viewDelegate?.metadataNextPageFilesDownloadingStatusDidChange(viewModel: self)
+        }
+    }
+    
     func getNextPartOfFiles()
     {
+        if nextPageToken.characters.count < 1
+        {
+            return
+        }
+        isDownloadingNextPageOfFiles = true
         getFiles
-            { (error) in
-                self.viewDelegate?.filesDidChange(viewModel: self)
+        { (error) in
+            self.isDownloadingNextPageOfFiles = false
+            self.viewDelegate?.filesDidChange(viewModel: self)
         }
     }
     

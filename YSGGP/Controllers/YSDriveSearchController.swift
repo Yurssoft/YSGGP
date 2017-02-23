@@ -77,11 +77,10 @@ class YSDriveSearchController : UITableViewController
     
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath)
     {
-        //TODO: manage next page token
-//        if let viewModel = viewModel, indexPath.row > viewModel.numberOfFiles - 5
-//        {
-//            viewModel.getNextPartOfFiles()
-//        }
+        if let viewModel = viewModel, !viewModel.isDownloadingNextPageOfFiles, indexPath.row > viewModel.numberOfFiles - 5
+        {
+            viewModel.getNextPartOfFiles()
+        }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
@@ -113,6 +112,11 @@ extension YSDriveSearchController : YSDriveSearchViewModelViewDelegate
         {
             self.tableView.reloadData()
         }
+    }
+    
+    func metadataNextPageFilesDownloadingStatusDidChange(viewModel: YSDriveSearchViewModelProtocol)
+    {
+        //TODO: show and hide loader
     }
     
     func errorDidChange(viewModel: YSDriveSearchViewModelProtocol, error: YSErrorProtocol)
