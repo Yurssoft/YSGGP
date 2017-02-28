@@ -41,6 +41,12 @@ class YSDriveSearchController : UITableViewController
         viewModel?.getFiles(completion: {_ in })
     }
     
+    override func viewWillAppear(_ animated: Bool)
+    {
+        super.viewWillAppear(animated)
+        viewModel?.subscribeToDownloadingProgress()
+    }
+    
     @IBAction func doneButtonTapped(_ sender: UIBarButtonItem)
     {
         navigationController?.dismiss(animated: true)

@@ -16,6 +16,7 @@ class YSDriveSearchCoordinator : YSCoordinatorProtocol
     fileprivate var searchNavigationController: UINavigationController?
     fileprivate var driveCoordinator : YSDriveTopCoordinator = YSDriveTopCoordinator()
     fileprivate var storyboard: UIStoryboard?
+    fileprivate weak var searchViewModel: YSDriveSearchViewModel?
     
     func start() { }
     
@@ -30,6 +31,7 @@ class YSDriveSearchCoordinator : YSCoordinatorProtocol
         YSAppDelegate.appDelegate().fileDownloader?.downloadsDelegate = viewModel
         viewModel.coordinatorDelegate = self
         searchController.viewModel = viewModel
+        searchViewModel = viewModel
         navigationController?.present(searchControllerNavigation, animated: true)
         searchNavigationController = searchControllerNavigation
     }
@@ -73,5 +75,10 @@ extension YSDriveSearchCoordinator : YSDriveSearchViewModelCoordinatorDelegate
     {
         //TODO: check if no leaks
         YSAppDelegate.appDelegate().searchCoordinator = nil
+    }
+    
+    func subscribeToDownloadingProgress()
+    {
+        YSAppDelegate.appDelegate().fileDownloader?.downloadsDelegate = searchViewModel
     }
 }

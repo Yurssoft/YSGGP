@@ -24,7 +24,7 @@ class YSDriveSearchModel : YSDriveSearchModelProtocol
             )!
             url.append("pageToken=\(encodedNextPageToken)&")
         }
-        url.append("corpus=user&orderBy=folder,name&pageSize=400&q=SEARCH_CONTAINS(mimeType+contains+'folder'+or+mimeType+contains+'audio')+and+trashed=false&spaces=drive&fields=nextPageToken,files(id,+name,+size,+mimeType)&key=AIzaSyCMsksSn6-1FzYhN49uDAzN83HGvFVXqaU")
+        url.append("corpus=user&orderBy=folder,name&pageSize=20&q=SEARCH_CONTAINS(mimeType+contains+'folder'+or+mimeType+contains+'audio')+and+trashed=false&spaces=drive&fields=nextPageToken,files(id,+name,+size,+mimeType)&key=AIzaSyCMsksSn6-1FzYhN49uDAzN83HGvFVXqaU")
         let searchTermClean = searchTerm.replacingOccurrences(of: " ", with: "")
         if searchTermClean.characters.count > 0
         {
@@ -45,6 +45,7 @@ class YSDriveSearchModel : YSDriveSearchModelProtocol
                 completionHandler([], "", yserror)
                 return
             }
+            //TODO: save data from server to local database
             guard let filesDictionary = filesDictionary else { return completionHandler([], "", YSError()) }
             var ysFiles = [YSDriveFileProtocol]()
             var nextPageToken = String()

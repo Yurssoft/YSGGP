@@ -63,6 +63,11 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
         }
     }
     
+    func subscribeToDownloadingProgress()
+    {
+        coordinatorDelegate?.subscribeToDownloadingProgress()
+    }
+    
     func getNextPartOfFiles()
     {
         if nextPageToken.characters.count < 1

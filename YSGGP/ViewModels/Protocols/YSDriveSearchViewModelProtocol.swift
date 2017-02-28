@@ -22,6 +22,7 @@ protocol YSDriveSearchViewModelCoordinatorDelegate: class
 {
     func searchViewModelDidSelectFile(_ viewModel: YSDriveSearchViewModelProtocol, file: YSDriveFileProtocol)
     func searchViewModelDidFinish()
+    func subscribeToDownloadingProgress()
 }
 
 protocol YSDriveSearchViewModelProtocol
@@ -35,6 +36,7 @@ protocol YSDriveSearchViewModelProtocol
     var searchTerm : String { get set }
     var isDownloadingNextPageOfFiles: Bool { get }
     
+    func subscribeToDownloadingProgress()
     func getNextPartOfFiles()
     func file(at index: Int) -> YSDriveFileProtocol?
     func download(for file: YSDriveFileProtocol) -> YSDownloadProtocol?
