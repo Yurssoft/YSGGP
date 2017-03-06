@@ -52,11 +52,10 @@ class YSDriveSearchModel : YSDriveSearchModelProtocol
             if let err = error
             {
                 let yserror = err as! YSError
-                //TODO: search local database
+                //TODO: search local database as section
                 completionHandler([], "", yserror)
                 return
             }
-            //TODO: save data from server to local database
             guard let filesDictionary = filesDictionary else { return completionHandler([], "", YSError()) }
             var ysFiles = [YSDriveFileProtocol]()
             var nextPageToken = String()

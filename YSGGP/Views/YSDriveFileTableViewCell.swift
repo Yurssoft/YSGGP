@@ -43,7 +43,7 @@ class YSDriveFileTableViewCell: UITableViewCell {
         fileImageView?.image = UIImage(named: file.isAudio ? "song" : "folder")
         if file.isAudio
         {
-            //TODO: fix performance - do not check for file existing every time
+            //TODO: fix performance - do not check for file existing every time - create dynamic list
             if file.localFileExists()
             {
                 downloadButton.isHidden = true

@@ -73,7 +73,6 @@ extension YSDriveSearchCoordinator : YSDriveSearchViewModelCoordinatorDelegate
     
     func searchViewModelDidFinish()
     {
-        //TODO: check if no leaks
         YSAppDelegate.appDelegate().searchCoordinator = nil
     }
     
