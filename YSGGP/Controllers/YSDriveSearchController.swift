@@ -10,7 +10,8 @@ import UIKit
 import SwiftMessages
 import MJRefresh
 
-//TODO: add sections - all, files, folders
+
+
 class YSDriveSearchController : UITableViewController
 {
     var viewModel: YSDriveSearchViewModelProtocol?
@@ -33,18 +34,21 @@ class YSDriveSearchController : UITableViewController
         searchController.searchResultsUpdater = self
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.dimsBackgroundDuringPresentation = false
+        searchController.searchBar.scopeButtonTitles = [YSSearchSectionType.all.rawValue, YSSearchSectionType.files.rawValue, YSSearchSectionType.folders.rawValue]
+        searchController.searchBar.delegate = self
         tableView.tableHeaderView = searchController.searchBar
         
         let bundle = Bundle(for: YSDriveFileTableViewCell.self)
         let nib = UINib(nibName: YSDriveFileTableViewCell.nameOfClass, bundle: bundle)
         tableView.register(nib, forCellReuseIdentifier: YSDriveFileTableViewCell.nameOfClass)
         
-        viewModel?.getFiles(completion: {_ in })
         
         tableView.mj_footer = MJRefreshAutoNormalFooter.init
         { [weak self] () -> Void in
             self?.viewModel?.getNextPartOfFiles()
         }
+        guard let viewModel = viewModel else { return }
+        viewModel.getFiles(sectionType: viewModel.sectionType, searchTerm: viewModel.searchTerm, completion: {_ in })
     }
     
     override func viewWillAppear(_ animated: Bool)
@@ -203,5 +207,15 @@ extension YSDriveSearchController : UISearchResultsUpdating
     {
         guard var viewModel = viewModel, let searchText = searchController.searchBar.text, searchText.characters.count > 1 else { return }
         viewModel.searchTerm = searchText
+    }
+}
+
+extension YSDriveSearchController : UISearchBarDelegate
+{
+    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int)
+    {
+        let section = YSSearchSectionType(rawValue: searchBar.scopeButtonTitles![selectedScope])
+        guard let sectionType = section, let viewModel = viewModel, let searchText = searchController.searchBar.text, searchText.characters.count > 1 else { return }
+        viewModel.getFiles(sectionType: sectionType, searchTerm: searchText, completion: {_ in })
     }
 }

@@ -8,6 +8,13 @@
 
 import Foundation
 
+enum YSSearchSectionType : String
+{
+    case all = "All"
+    case files = "Files"
+    case folders = "Folders"
+}
+
 protocol YSDriveSearchViewModelViewDelegate: class
 {
     func filesDidChange(viewModel: YSDriveSearchViewModelProtocol)
@@ -35,13 +42,14 @@ protocol YSDriveSearchViewModelProtocol
     var error : YSErrorProtocol { get }
     var searchTerm : String { get set }
     var isDownloadingNextPageOfFiles: Bool { get }
+    var sectionType: YSSearchSectionType { get }
     
     func subscribeToDownloadingProgress()
     func getNextPartOfFiles()
     func file(at index: Int) -> YSDriveFileProtocol?
     func download(for file: YSDriveFileProtocol) -> YSDownloadProtocol?
     func useFile(at index: Int)
-    func getFiles(completion: @escaping CompletionHandler)
+    func getFiles(sectionType: YSSearchSectionType, searchTerm: String, completion: @escaping CompletionHandler)
     func searchViewControllerDidFinish()
     func download(_ file : YSDriveFileProtocol)
     func stopDownloading(_ file : YSDriveFileProtocol)

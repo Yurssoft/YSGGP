@@ -38,10 +38,9 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
         didSet
         {
             nextPageToken = ""
-            getFiles
-                { (error) in
+            getFiles(sectionType: sectionType, searchTerm: searchTerm, completion: { (error) in
                 self.viewDelegate?.filesDidChange(viewModel: self)
-            }
+            })
         }
     }
     
@@ -63,6 +62,8 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
         }
     }
     
+    var sectionType: YSSearchSectionType = YSSearchSectionType(rawValue: YSSearchSectionType.all.rawValue)!
+    
     func subscribeToDownloadingProgress()
     {
         coordinatorDelegate?.subscribeToDownloadingProgress()
@@ -72,14 +73,14 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
     {
         if nextPageToken.characters.count < 1
         {
+            isDownloadingNextPageOfFiles = false
             return
         }
         isDownloadingNextPageOfFiles = true
-        getFiles
-        { (error) in
+        getFiles(sectionType: sectionType, searchTerm: searchTerm, completion: { (error) in
             self.isDownloadingNextPageOfFiles = false
             self.viewDelegate?.filesDidChange(viewModel: self)
-        }
+        })
     }
     
     func file(at index: Int) -> YSDriveFileProtocol?
@@ -103,16 +104,17 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
         coordinatorDelegate.searchViewModelDidSelectFile(self, file: files[index])
     }
     
-    func getFiles(completion: @escaping CompletionHandler)
+    func getFiles(sectionType: YSSearchSectionType, searchTerm: String, completion: @escaping CompletionHandler)
     {
+        self.sectionType = sectionType
         isDownloadingMetadata = true
-        model?.getFiles(for: searchTerm, nextPageToken: nextPageToken)
-            { (files, nextPageToken, error) in
-                self.nextPageToken.characters.count < 1 ? self.files = files : self.files.append(contentsOf: files)
-                self.nextPageToken = nextPageToken
-                self.isDownloadingMetadata = false
-                self.error = error!
-                completion(error)
+        model?.getFiles(for: searchTerm, sectionType: sectionType, nextPageToken: nextPageToken)
+        { (files, nextPageToken, error) in
+            self.nextPageToken.characters.count < 1 ? self.files = files : self.files.append(contentsOf: files)
+            self.nextPageToken = nextPageToken
+            self.isDownloadingMetadata = false
+            self.error = error!
+            completion(error)
         }
     }
     

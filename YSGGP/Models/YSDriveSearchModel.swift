@@ -10,7 +10,7 @@ import Foundation
 
 class YSDriveSearchModel : YSDriveSearchModelProtocol
 {
-    func getFiles(for searchTerm: String, nextPageToken: String, _ completionHandler: @escaping DriveSearchCompletionHandler)
+    func getFiles(for searchTerm: String, sectionType: YSSearchSectionType, nextPageToken: String, _ completionHandler: @escaping DriveSearchCompletionHandler)
     {
         var url = "\(YSConstants.kDriveAPIEndpoint)files?"
         if nextPageToken.characters.count > 0
@@ -24,7 +24,18 @@ class YSDriveSearchModel : YSDriveSearchModelProtocol
             )!
             url.append("pageToken=\(encodedNextPageToken)&")
         }
-        url.append("corpus=user&orderBy=folder,name&pageSize=20&q=SEARCH_CONTAINS(mimeType+contains+'folder'+or+mimeType+contains+'audio')+and+trashed=false&spaces=drive&fields=nextPageToken,files(id,+name,+size,+mimeType)&key=AIzaSyCMsksSn6-1FzYhN49uDAzN83HGvFVXqaU")
+        switch sectionType
+        {
+        case .all:
+            url.append("corpus=user&orderBy=folder,name&pageSize=20&q=SEARCH_CONTAINS(mimeType+contains+'folder'+or+mimeType+contains+'audio')+and+trashed=false&spaces=drive&fields=nextPageToken,files(id,+name,+size,+mimeType)&key=AIzaSyCMsksSn6-1FzYhN49uDAzN83HGvFVXqaU")
+            break
+        case .files:
+            url.append("corpus=user&orderBy=folder,name&pageSize=20&q=SEARCH_CONTAINSmimeType+contains+'audio'+and+trashed=false&spaces=drive&fields=nextPageToken,files(id,+name,+size,+mimeType)&key=AIzaSyCMsksSn6-1FzYhN49uDAzN83HGvFVXqaU")
+            break
+        case .folders:
+            url.append("corpus=user&orderBy=folder,name&pageSize=20&q=SEARCH_CONTAINSmimeType+contains+'folder'+and+trashed=false&spaces=drive&fields=nextPageToken,files(id,+name,+size,+mimeType)&key=AIzaSyCMsksSn6-1FzYhN49uDAzN83HGvFVXqaU")
+            break
+        }
         let searchTermClean = searchTerm.replacingOccurrences(of: " ", with: "")
         if searchTermClean.characters.count > 0
         {
