@@ -8,6 +8,7 @@
 
 import UIKit
 import SwiftMessages
+import MJRefresh
 
 //TODO: add sections - all, files, folders
 class YSDriveSearchController : UITableViewController
@@ -39,6 +40,11 @@ class YSDriveSearchController : UITableViewController
         tableView.register(nib, forCellReuseIdentifier: YSDriveFileTableViewCell.nameOfClass)
         
         viewModel?.getFiles(completion: {_ in })
+        
+        tableView.mj_footer = MJRefreshAutoNormalFooter.init
+        { [weak self] () -> Void in
+            self?.viewModel?.getNextPartOfFiles()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool)
@@ -81,14 +87,6 @@ class YSDriveSearchController : UITableViewController
         return cell
     }
     
-    override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath)
-    {
-        if let viewModel = viewModel, !viewModel.isDownloadingNextPageOfFiles, indexPath.row > viewModel.numberOfFiles - 5
-        {
-            viewModel.getNextPartOfFiles()
-        }
-    }
-    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     {
         searchController.isActive = false
@@ -122,7 +120,10 @@ extension YSDriveSearchController : YSDriveSearchViewModelViewDelegate
     
     func metadataNextPageFilesDownloadingStatusDidChange(viewModel: YSDriveSearchViewModelProtocol)
     {
-        //TODO: show and hide loader
+        if !viewModel.isDownloadingNextPageOfFiles
+        {
+            tableView.mj_footer.endRefreshing()
+        }
     }
     
     func errorDidChange(viewModel: YSDriveSearchViewModelProtocol, error: YSErrorProtocol)
