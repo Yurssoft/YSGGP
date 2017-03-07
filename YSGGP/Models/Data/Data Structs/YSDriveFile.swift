@@ -89,13 +89,7 @@ class YSDriveFile : NSObject, YSDriveFileProtocol
     
     func localFileExists() -> Bool
     {
-        var isDir : ObjCBool = false
-        if let path = localFilePath()?.path
-        {
-            let exists = FileManager.default.fileExists(atPath: path, isDirectory: &isDir)
-            return exists
-        }
-        return false
+        return YSAppDelegate.appDelegate().filesOnDisk.contains(fileDriveIdentifier)
     }
     
     func updateFileSize() -> UInt64
@@ -117,6 +111,8 @@ class YSDriveFile : NSObject, YSDriveFileProtocol
     func removeLocalFile()
     {
         try? FileManager.default.removeItem(at: localFilePath()!)
+        guard let indexToDelete = YSAppDelegate.appDelegate().filesOnDisk.index(of: fileDriveIdentifier) else { return }
+        YSAppDelegate.appDelegate().filesOnDisk.remove(at: indexToDelete)
     }
     
     override var debugDescription: String
