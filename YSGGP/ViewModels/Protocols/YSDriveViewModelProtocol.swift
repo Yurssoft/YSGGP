@@ -25,6 +25,7 @@ protocol YSDriveViewModelCoordinatorDelegate: class
     func driveViewModelDidRequestedLogin()
     func driveViewModelDidFinish()
     func driveViewControllerDidRequestedSearch()
+    func driveViewControllerDidDeletedFiles()
 }
 
 protocol YSDriveViewModelProtocol

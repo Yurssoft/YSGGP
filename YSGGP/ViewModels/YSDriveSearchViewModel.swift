@@ -143,19 +143,27 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
     }
 }
 
-extension YSDriveSearchViewModel : YSDriveFileDownloaderDelegate
+extension YSDriveSearchViewModel : YSUpdatingDelegate
 {
+    internal func filesDidChange()
+    {
+        DispatchQueue.main.async
+        {
+            self.viewDelegate?.filesDidChange(viewModel: self)
+        }
+    }
+
     func downloadDidChange(_ download : YSDownloadProtocol,_ error: YSErrorProtocol?)
     {
         DispatchQueue.main.async
+        {
+            if let error = error
             {
-                if let error = error
-                {
-                    self.viewDelegate?.downloadErrorDidChange(viewModel: self, error: error, download: download)
-                }
-                let index = self.files.index(where: {$0.fileDriveIdentifier == download.file.fileDriveIdentifier})
-                guard let indexx = index, self.files.count > indexx else { return }
-                self.viewDelegate?.reloadFileDownload(at: indexx, viewModel: self)
+                self.viewDelegate?.downloadErrorDidChange(viewModel: self, error: error, download: download)
+            }
+            let index = self.files.index(where: {$0.fileDriveIdentifier == download.file.fileDriveIdentifier})
+            guard let indexx = index, self.files.count > indexx else { return }
+            self.viewDelegate?.reloadFileDownload(at: indexx, viewModel: self)
         }
     }
 }

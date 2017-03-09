@@ -102,6 +102,92 @@ class YSPlayerViewModel: NSObject, YSPlayerViewModelProtocol, AVAudioPlayerDeleg
             getFiles()
         }
     }
+
+    var player: AVAudioPlayer?
+    
+    var isPlaying : Bool
+    {
+        return player?.isPlaying ?? false
+    }
+    
+    var currentFile: YSDriveFileProtocol?
+    {
+        didSet
+        {
+            if var currentFile = currentFile
+            {
+                if let currentFileIndex = files.index(where: {$0.fileDriveIdentifier == currentFile.fileDriveIdentifier})
+                {
+                    currentPlayingIndex = currentFileIndex
+                }
+                guard let fileUrl = currentFile.localFilePath(), let audioPlayer = try? AVAudioPlayer(contentsOf: fileUrl) else { return }
+                updateNowPlayingInfoForCurrentPlaybackItem()
+                player?.stop()
+                player?.delegate = nil
+                audioPlayer.delegate = self
+                audioPlayer.prepareToPlay()
+                let audioSession = AVAudioSession.sharedInstance()
+                audioPlayer.volume = audioSession.outputVolume
+                player = audioPlayer
+                let fileTime = Double(currentFile.playedTime) ?? 0
+                if fileTime > 1.0.seconds
+                {
+                    seek(to: fileTime)
+                }
+            }
+            playerDelegate?.currentFilePlayingDidChange(viewModel: self)
+        }
+    }
+    
+    var nextFile: YSDriveFileProtocol?
+    {
+        guard let currentPlaybackFile = currentFile, files.count > 0 else { return files.first }
+        guard var nextItemIndex = files.index(where: {$0.fileDriveIdentifier == currentPlaybackFile.fileDriveIdentifier})
+        else
+        {
+           if currentPlayingIndex <= files.count
+           {
+            return files[currentPlayingIndex]
+            }
+            return files.first
+        }
+        nextItemIndex = nextItemIndex + 1
+        if nextItemIndex >= files.count { return files.first }
+        
+        return files[nextItemIndex]
+    }
+    
+    var previousFile: YSDriveFileProtocol?
+    {
+        guard let currentPlaybackFile = currentFile, files.count > 0 else { return files.last }
+        guard var previousItemIndex = files.index(where: {$0.fileDriveIdentifier == currentPlaybackFile.fileDriveIdentifier})
+        else
+        {
+            if currentPlayingIndex <= files.count
+            {
+                return files[currentPlayingIndex]
+            }
+            return files.last
+        }
+        previousItemIndex = previousItemIndex - 1
+        if previousItemIndex < 0 { return files.last }
+        
+        return files[previousItemIndex]
+    }
+    
+    var nowPlayingInfo: [String : AnyObject]?
+    
+    var fileDuration: TimeInterval
+    {
+        return player?.duration ?? 0
+    }
+    
+    var fileCurrentTime: TimeInterval
+    {
+        return player?.currentTime ?? 0
+    }
+    
+    var currentPlayingIndex : Int = 0
     
     func getFiles()
     {
@@ -151,70 +237,6 @@ class YSPlayerViewModel: NSObject, YSPlayerViewModelProtocol, AVAudioPlayerDeleg
                 }
         }
         return folders
-    }
-
-    var player: AVAudioPlayer?
-    
-    var isPlaying : Bool
-    {
-        return player?.isPlaying ?? false
-    }
-    
-    var currentFile: YSDriveFileProtocol?
-    {
-        didSet
-        {
-            if var currentFile = currentFile
-            {
-                guard let fileUrl = currentFile.localFilePath(), let audioPlayer = try? AVAudioPlayer(contentsOf: fileUrl) else { return }
-                updateNowPlayingInfoForCurrentPlaybackItem()
-                player?.stop()
-                player?.delegate = nil
-                audioPlayer.delegate = self
-                audioPlayer.prepareToPlay()
-                let audioSession = AVAudioSession.sharedInstance()
-                audioPlayer.volume = audioSession.outputVolume
-                player = audioPlayer
-                let fileTime = Double(currentFile.playedTime) ?? 0
-                if fileTime > 1.0.seconds
-                {
-                    seek(to: fileTime)
-                }
-            }
-            playerDelegate?.currentFilePlayingDidChange(viewModel: self)
-        }
-    }
-    
-    var nextFile: YSDriveFileProtocol?
-    {
-        guard let currentPlaybackFile = currentFile, files.count > 0 else { return files.first }
-        
-        let nextItemIndex = files.index(where: {$0.fileDriveIdentifier == currentPlaybackFile.fileDriveIdentifier})! + 1
-        if nextItemIndex >= files.count { return files.first }
-        
-        return files[nextItemIndex]
-    }
-    
-    var previousFile: YSDriveFileProtocol?
-    {
-        guard let currentPlaybackFile = currentFile, files.count > 0 else { return files.last }
-        
-        let previousItemIndex = files.index(where: {$0.fileDriveIdentifier == currentPlaybackFile.fileDriveIdentifier})! - 1
-        if previousItemIndex < 0 { return files.last }
-        
-        return files[previousItemIndex]
-    }
-    
-    var nowPlayingInfo: [String : AnyObject]?
-    
-    var fileDuration: TimeInterval
-    {
-        return player?.duration ?? 0
-    }
-    
-    var fileCurrentTime: TimeInterval
-    {
-        return player?.currentTime ?? 0
     }
     
     func togglePlayPause()
@@ -369,9 +391,14 @@ class YSPlayerViewModel: NSObject, YSPlayerViewModelProtocol, AVAudioPlayerDeleg
     }
 }
 
-extension YSPlayerViewModel : YSDriveFileDownloaderDelegate
+extension YSPlayerViewModel : YSUpdatingDelegate
 {
     func downloadDidChange(_ download : YSDownloadProtocol,_ error: YSErrorProtocol?)
+    {
+        getFiles()
+    }
+    
+    func filesDidChange()
     {
         getFiles()
     }

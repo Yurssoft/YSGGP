@@ -11,10 +11,7 @@ import SwiftMessages
 import Firebase
 import ReachabilitySwift
 
-protocol YSDriveFileDownloaderDelegate: class
-{
-    func downloadDidChange(_ download : YSDownloadProtocol,_ error: YSErrorProtocol?)
-}
+
 
 class YSDriveFileDownloader : NSObject
 {
@@ -22,10 +19,6 @@ class YSDriveFileDownloader : NSObject
     fileprivate var session : Foundation.URLSession
     fileprivate var sessionQueue : OperationQueue
     fileprivate var reachability : Reachability = Reachability()!
-    
-    weak var downloadsDelegate: YSDriveFileDownloaderDelegate?
-    weak var playlistDelegate: YSDriveFileDownloaderDelegate?
-    weak var playerDelegate: YSDriveFileDownloaderDelegate?
     
     required override init()
     {
@@ -75,7 +68,7 @@ class YSDriveFileDownloader : NSObject
                 downloadTask.resume()
                 download.downloadStatus = .downloading(progress: 0.0)
                 self.downloads[url] = download
-                self.downloadsDelegate?.downloadDidChange(download, nil)
+                YSAppDelegate.appDelegate().downloadsDelegate?.downloadDidChange(download, nil)
             }
         }
     }
@@ -100,7 +93,7 @@ class YSDriveFileDownloader : NSObject
         var download = YSDownload(file: file)
         download.downloadStatus = .pending
         downloads[file.fileUrl()] = download
-        downloadsDelegate?.downloadDidChange(download, nil)
+        YSAppDelegate.appDelegate().downloadsDelegate?.downloadDidChange(download, nil)
         downloadNextFile()
     }
     
@@ -126,7 +119,7 @@ class YSDriveFileDownloader : NSObject
         if let download = downloads[file.fileUrl()]
         {
             download.downloadTask?.cancel()
-            downloadsDelegate?.downloadDidChange(download, nil)
+            YSAppDelegate.appDelegate().downloadsDelegate?.downloadDidChange(download, nil)
             downloads[file.fileUrl()] = nil
             downloadNextFile()
         }
@@ -159,7 +152,7 @@ extension YSDriveFileDownloader: URLSessionDownloadDelegate
         {
             if let err = YSNetworkResponseManager.validateDownloadTask(downloadTask.response, error: nil, fileName: download.file.fileName)
             {
-                downloadsDelegate?.downloadDidChange(download, err)
+                YSAppDelegate.appDelegate().downloadsDelegate?.downloadDidChange(download, err)
                 downloads[url] = nil
                 return
             }
@@ -179,15 +172,15 @@ extension YSDriveFileDownloader: URLSessionDownloadDelegate
                 
                 let errorMessage = YSError(errorType: YSErrorType.couldNotDownloadFile, messageType: Theme.error, title: "Error", message: "Could not copy file \(download.file.fileName)", buttonTitle: "Try again", debugInfo: error.localizedDescription)
                 
-                downloadsDelegate?.downloadDidChange(download, errorMessage)
+                YSAppDelegate.appDelegate().downloadsDelegate?.downloadDidChange(download, errorMessage)
                 downloads[url] = nil
                 return
             }
             YSAppDelegate.appDelegate().filesOnDisk.append(download.file.fileDriveIdentifier)
             _ = download.file.updateFileSize()
-            playlistDelegate?.downloadDidChange(download, nil)
-            playerDelegate?.downloadDidChange(download, nil)
-            downloadsDelegate?.downloadDidChange(download, nil)
+            YSAppDelegate.appDelegate().playlistDelegate?.downloadDidChange(download, nil)
+            YSAppDelegate.appDelegate().playerDelegate?.downloadDidChange(download, nil)
+            YSAppDelegate.appDelegate().downloadsDelegate?.downloadDidChange(download, nil)
             downloads[url] = nil
             downloadNextFile()
         }
@@ -202,7 +195,7 @@ extension YSDriveFileDownloader: URLSessionDownloadDelegate
             let totalSize = ByteCountFormatter.string(fromByteCount: totalBytesExpectedToWrite, countStyle: ByteCountFormatter.CountStyle.binary)
             download.totalSize = totalSize
             downloads[url] = download
-            downloadsDelegate?.downloadDidChange(download, nil)
+            YSAppDelegate.appDelegate().downloadsDelegate?.downloadDidChange(download, nil)
         }
     }
     
@@ -220,7 +213,7 @@ extension YSDriveFileDownloader: URLSessionDownloadDelegate
             }
             var yserror : YSErrorProtocol
             yserror = YSError(errorType: YSErrorType.couldNotDownloadFile, messageType: Theme.error, title: "Error", message: "Couldn't download \(download.file.fileName)", buttonTitle: "Try Again", debugInfo: error.localizedDescription)
-            downloadsDelegate?.downloadDidChange(download, yserror)
+            YSAppDelegate.appDelegate().downloadsDelegate?.downloadDidChange(download, yserror)
             downloads[download.file.fileUrl()] = nil
         }
     }

@@ -26,7 +26,7 @@ class YSPlayerCoordinator: YSCoordinatorProtocol
         let model = YSPlaylistAndPlayerModel()
         viewModel.coordinatorDelegate = self
         viewModel.model = model
-        YSAppDelegate.appDelegate().fileDownloader?.playerDelegate = viewModel
+        YSAppDelegate.appDelegate().playerDelegate = viewModel
     }
     
     func play(file: YSDriveFileProtocol)

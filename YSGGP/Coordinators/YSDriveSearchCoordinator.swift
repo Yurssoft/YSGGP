@@ -28,7 +28,7 @@ class YSDriveSearchCoordinator : YSCoordinatorProtocol
         
         let viewModel = YSDriveSearchViewModel()
         viewModel.model = YSDriveSearchModel()
-        YSAppDelegate.appDelegate().fileDownloader?.downloadsDelegate = viewModel
+        YSAppDelegate.appDelegate().downloadsDelegate = viewModel
         viewModel.coordinatorDelegate = self
         searchController.viewModel = viewModel
         searchViewModel = viewModel
@@ -78,6 +78,6 @@ extension YSDriveSearchCoordinator : YSDriveSearchViewModelCoordinatorDelegate
     
     func subscribeToDownloadingProgress()
     {
-        YSAppDelegate.appDelegate().fileDownloader?.downloadsDelegate = searchViewModel
+        YSAppDelegate.appDelegate().downloadsDelegate = searchViewModel
     }
 }

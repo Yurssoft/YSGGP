@@ -16,8 +16,8 @@ protocol YSDriveFileTableViewCellDelegate : class
     func stopDownloadButtonPressed(_ file: YSDriveFileProtocol)
 }
 
-class YSDriveFileTableViewCell: UITableViewCell {
-    
+class YSDriveFileTableViewCell: UITableViewCell
+{
     @IBOutlet weak var fileNameLabel: UILabel!
     @IBOutlet weak var fileInfoLabel: UILabel!
     @IBOutlet weak var fileImageView: UIImageView!

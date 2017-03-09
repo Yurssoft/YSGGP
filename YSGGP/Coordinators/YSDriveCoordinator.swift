@@ -31,7 +31,7 @@ class YSDriveCoordinator: NSObject, YSCoordinatorProtocol
     func start()
     {
         let viewModel = YSDriveViewModel()
-        YSAppDelegate.appDelegate().fileDownloader?.downloadsDelegate = viewModel
+        YSAppDelegate.appDelegate().downloadsDelegate = viewModel
         viewModel.model = YSDriveModel(folder: folder)
         viewModel.coordinatorDelegate = self
         driveViewController.viewModel = viewModel
@@ -39,7 +39,7 @@ class YSDriveCoordinator: NSObject, YSCoordinatorProtocol
     
     func updateDownloadDelegate()
     {
-        YSAppDelegate.appDelegate().fileDownloader?.downloadsDelegate = driveViewController.viewModel as? YSDriveFileDownloaderDelegate
+        YSAppDelegate.appDelegate().downloadsDelegate = driveViewController.viewModel as? YSUpdatingDelegate
     }
     
     fileprivate func start(folderID: String,error: YSError?)
@@ -76,5 +76,11 @@ extension YSDriveCoordinator: YSDriveViewModelCoordinatorDelegate
     func driveViewControllerDidRequestedSearch()
     {
         delegate?.driveViewControllerDidRequestedSearch()
+    }
+    
+    func driveViewControllerDidDeletedFiles()
+    {
+        YSAppDelegate.appDelegate().playerDelegate?.filesDidChange()
+        YSAppDelegate.appDelegate().playlistDelegate?.filesDidChange()
     }
 }
