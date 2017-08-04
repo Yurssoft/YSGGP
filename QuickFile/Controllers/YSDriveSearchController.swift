@@ -48,6 +48,7 @@ class YSDriveSearchController : UITableViewController
         }
         let log = SwiftyBeaver.self
         log.info("")
+        //TODO: move it to viewModel
         guard let viewModel = viewModel else { return }
         viewModel.getFiles(sectionType: viewModel.sectionType, searchTerm: viewModel.searchTerm, completion: {_ in })
     }

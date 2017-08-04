@@ -110,6 +110,7 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
         isDownloadingMetadata = true
         model?.getFiles(for: searchTerm, sectionType: sectionType, nextPageToken: nextPageToken)
         { (files, nextPageToken, error) in
+            //TODO: check when nextPageToken = nil is all ok
             self.nextPageToken.characters.count < 1 ? self.files = files : self.files.append(contentsOf: files)
             self.nextPageToken = nextPageToken
             self.isDownloadingMetadata = false

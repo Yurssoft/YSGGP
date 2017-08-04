@@ -44,7 +44,7 @@ protocol YSDriveViewModelProtocol
     func useFile(at index: Int)
     func loginToDrive()
     func removeDownloads()
-    func getFiles(completion: @escaping CompletionHandler)
+    func getFiles(_ completion: @escaping CompletionHandler)
     func driveViewControllerDidFinish()
     func driveViewControllerDidRequestedSearch()
     func download(_ file : YSDriveFileProtocol)
@@ -52,4 +52,5 @@ protocol YSDriveViewModelProtocol
     func index(of file : YSDriveFileProtocol) -> Int
     func deleteDownloadsFor(_ indexes : [IndexPath])
     func downloadFilesFor(_ indexes : [IndexPath])
+    func getNextPartOfFiles()
 }

@@ -39,6 +39,13 @@ class YSDriveViewController: UITableViewController
         let nib = UINib(nibName: YSDriveFileTableViewCell.nameOfClass, bundle: bundle)
         tableView.register(nib, forCellReuseIdentifier: YSDriveFileTableViewCell.nameOfClass)
         
+        
+        
+        tableView.mj_footer = MJRefreshAutoNormalFooter.init
+            { [weak self] () -> Void in
+                self?.viewModel?.getNextPartOfFiles()
+        }
+        
         tableView.emptyDataSetSource = self
         tableView.emptyDataSetDelegate = self
         tableView.tableFooterView = UIView()
@@ -189,8 +196,7 @@ class YSDriveViewController: UITableViewController
             tableView.mj_header.endRefreshing()
             return
         }
-        viewModel?.getFiles(completion:
-        { _ in
+        viewModel?.getFiles({ _ in
             self.tableView.mj_header.endRefreshing()
         })
     }
@@ -219,12 +225,17 @@ extension YSDriveViewController: YSDriveViewModelViewDelegate
         }
     }
     
+    //TODO: do not allow pull to refresh and pull up in same moment
     func metadataDownloadStatusDidChange(viewModel: YSDriveViewModelProtocol)
     {
         SwiftMessages.hide()
         DispatchQueue.main.async
         {
             [weak self] in self?.navigationController?.setIndeterminate(viewModel.isDownloadingMetadata)
+            if !viewModel.isDownloadingMetadata
+            {
+                self?.tableView.mj_footer.endRefreshing()
+            }
         }
     }
     

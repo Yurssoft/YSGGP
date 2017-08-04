@@ -23,18 +23,31 @@ class YSDriveModel: YSDriveModelProtocol
         currentFolder = folder
     }
     
-    func getFiles(_ completionHandler: @escaping AllFilesCompletionHandler)
+    func getFiles(pageToken: String, nextPageToken: String?,_ completionHandler: @escaping AllFilesCompletionHandler)
     {
-        let url = "\(YSConstants.kDriveAPIEndpoint)files?corpus=user&orderBy=folder%2Cname&pageSize=\(YSConstants.kPageSize)&q='\(currentFolder.folderID)'+in+parents+and+(mimeType+contains+'folder'+or+mimeType+contains+'audio')+and+trashed%3Dfalse&spaces=drive&fields=nextPageToken%2C+files(id%2C+name%2C+size%2C+mimeType)&key=\(YSConstants.kDriveAPIKey)"
+        var url = "\(YSConstants.kDriveAPIEndpoint)files?"
+        //TODO: remove duplicated and deprecated code
+        if let nextPageToken = nextPageToken
+        {
+            let encodedNextPageToken = CFURLCreateStringByAddingPercentEscapes(
+                nil,
+                nextPageToken as CFString!,
+                nil,
+                "!'();:@&=+$,/?%#[]" as CFString!,
+                CFStringBuiltInEncodings.ASCII.rawValue
+                ) as String
+            url.append("pageToken=\(encodedNextPageToken)&")
+        }
+        url.append("corpus=user&orderBy=folder%2Cname&pageSize=\(YSConstants.kPageSize)&q='\(currentFolder.folderID)'+in+parents+and+(mimeType+contains+'folder'+or+mimeType+contains+'audio')+and+trashed%3Dfalse&spaces=drive&fields=nextPageToken%2C+files(id%2C+name%2C+size%2C+mimeType)&key=\(YSConstants.kDriveAPIKey)")
         YSFilesMetadataDownloader.downloadFilesList(for: url)
         { filesDictionary, error in
             if let err = error
             {
                 let yserror = err as! YSError
-                YSDatabaseManager.files(for: self.currentFolder, yserror, completionHandler)
+                YSDatabaseManager.offlineFiles(pageToken: pageToken, folder: self.currentFolder, yserror, completionHandler)
                 return
             }
-            YSDatabaseManager.save(remoteFilesDict: filesDictionary!, self.currentFolder, completionHandler)
+            YSDatabaseManager.save(pageToken: pageToken, remoteFilesDict: filesDictionary!, self.currentFolder, completionHandler)
         }
     }
     

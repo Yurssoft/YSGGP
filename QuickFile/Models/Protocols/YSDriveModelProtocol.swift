@@ -12,7 +12,7 @@ protocol YSDriveModelProtocol
 {
     var isLoggedIn : Bool {get}
     
-    func getFiles(_ completionHandler: @escaping AllFilesCompletionHandler)
+    func getFiles(pageToken: String, nextPageToken: String?,_ completionHandler: @escaping AllFilesCompletionHandler)
     
     func download(_ file : YSDriveFileProtocol)
     

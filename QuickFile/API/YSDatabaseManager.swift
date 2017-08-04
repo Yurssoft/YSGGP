@@ -11,14 +11,15 @@ import Firebase
 import SwiftMessages
 import SwiftyBeaver
 
-typealias AllFilesCompletionHandler = ([YSDriveFileProtocol],YSErrorProtocol?) -> Swift.Void
+//                                      //files              //error           //next page token
+typealias AllFilesCompletionHandler = ([YSDriveFileProtocol],YSErrorProtocol?, String?) -> Swift.Void
 typealias AllFilesAndCurrentPlayingCompletionHandler = ([YSDriveFileProtocol], YSDriveFileProtocol?,YSErrorProtocol?) -> Swift.Void
 
 class YSDatabaseManager
 {
     private static let completionBlockDelay = 0.3
     
-    class func save(remoteFilesDict: [String : Any],_ folder : YSFolder, _ completionHandler: @escaping AllFilesCompletionHandler)
+    class func save(pageToken: String, remoteFilesDict: [String : Any],_ folder : YSFolder, _ completionHandler: @escaping AllFilesCompletionHandler)
     {
         if let ref = referenceForCurrentUser()
         {
@@ -26,6 +27,7 @@ class YSDatabaseManager
                 var dbFilesArrayDict = databaseFilesDictionary(from: dbFilesData)
                 let rootFolderID = YSFolder.rootFolder().folderID
                 var ysFiles : [YSDriveFileProtocol] = []
+                let nextPageToken = remoteFilesDict["nextPageToken"] as? String
                 let remoteFilesArrayDict = remoteFilesDict["files"] as! [[String: Any]]
                 
                 var isRootFolderAdded = false
@@ -57,7 +59,7 @@ class YSDatabaseManager
                     {
                         dbFile.value["isDeletedFromDrive"] = true
                     }
-                    dbFile.value["pageToken"] = ""
+                    dbFile.value["pageToken"] = pageToken
                     var ysFile = dbFile.value.toYSFile()
                     checkIfFileExists(file: &ysFile)
                     ysFiles.append(ysFile)
@@ -65,7 +67,7 @@ class YSDatabaseManager
                 
                 for var remoteFile in remoteFilesDict
                 {
-                    remoteFile.value["pageToken"] = ""
+                    remoteFile.value["pageToken"] = pageToken
                     dbFilesArrayDict[(remoteFile.value["fileDriveIdentifier"] as! String)] = remoteFile.value
                     var ysFile = remoteFile.value.toYSFile()
                     ysFile.pageToken = "1"
@@ -84,13 +86,14 @@ class YSDatabaseManager
                     return ysFile.folder.folderID == folder.folderID
                 })
                 ysFiles = sort(ysFiles: ysFiles)
-                completionHandler(ysFiles, YSError())
+                
+                callCompletionHandler(nextPageToken: nextPageToken, completionHandler, files: ysFiles, YSError())
                 return TransactionResult.abort()
             })
         }
         else
         {
-            completionHandler([], notLoggedInError())
+            callCompletionHandler(nextPageToken: nil, completionHandler, files: [], notLoggedInError() as! YSError)
         }
     }
     
@@ -128,7 +131,8 @@ class YSDatabaseManager
         return dbFile
     }
     
-    class func files(for folder: YSFolder,_ error: YSError,_ completionHandler: @escaping AllFilesCompletionHandler)
+    //TODO: use page token to get files
+    class func offlineFiles(pageToken: String, folder: YSFolder,_ error: YSError,_ completionHandler: @escaping AllFilesCompletionHandler)
     {
         if let ref = referenceForCurrentUser()
         {
@@ -149,13 +153,13 @@ class YSDatabaseManager
                     }
                     sortedFiles = sort(ysFiles: files)
                 }
-                callCompletionHandler(completionHandler, files: sortedFiles, error)
+                callCompletionHandler(nextPageToken: nil, completionHandler, files: sortedFiles, error)
                 return TransactionResult.abort()
             })
         }
         else
         {
-            callCompletionHandler(completionHandler, files: [], error)
+            callCompletionHandler(nextPageToken: nil, completionHandler, files: [], error)
         }
     }
     
@@ -322,11 +326,11 @@ class YSDatabaseManager
         return nil
     }
     
-    private class func callCompletionHandler(_ completionHandler: AllFilesCompletionHandler?, files : [YSDriveFileProtocol], _ error: YSError)
+    private class func callCompletionHandler(nextPageToken: String?, _ completionHandler: AllFilesCompletionHandler?, files : [YSDriveFileProtocol], _ error: YSError)
     {
         DispatchQueue.main.asyncAfter(deadline: .now() + completionBlockDelay)
         {
-            completionHandler!(files, error)
+            completionHandler!(files, error, nextPageToken)
         }
     }
 }

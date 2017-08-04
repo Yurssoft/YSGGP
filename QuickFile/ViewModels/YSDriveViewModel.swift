@@ -67,13 +67,7 @@ class YSDriveViewModel: YSDriveViewModelProtocol
             {
                 return
             }
-            isDownloadingMetadata = true
-            model?.getFiles()
-            { (files, error) in
-                self.isDownloadingMetadata = false
-                self.files = files
-                self.error = error!
-            }
+            getFiles({_ in })
         }
     }
     
@@ -81,6 +75,9 @@ class YSDriveViewModel: YSDriveViewModelProtocol
     {
         return files.count
     }
+    
+    fileprivate var nextPageToken: String?
+    fileprivate var currentPageToken: String = YSConstants.kFirstPageToken
     
     func file(at index: Int) -> YSDriveFileProtocol?
     {
@@ -115,15 +112,21 @@ class YSDriveViewModel: YSDriveViewModelProtocol
         viewDelegate?.filesDidChange(viewModel: self)
     }
     
-    func getFiles(completion: @escaping CompletionHandler)
+    func getFiles(_ completion: @escaping CompletionHandler)
     {
+        if isDownloadingMetadata
+        {
+            return
+        }
         isDownloadingMetadata = true
-        model?.getFiles()
-            { (files, error) in
+        
+        //TODO: when add files?
+        model?.getFiles(pageToken: currentPageToken, nextPageToken: nextPageToken)
+        { (files, error, nextPageToken) in
             self.isDownloadingMetadata = false
             self.files = files
             self.error = error!
-            completion(error)
+            self.nextPageToken = nextPageToken
         }
     }
     
@@ -179,6 +182,20 @@ class YSDriveViewModel: YSDriveViewModelProtocol
             let file = files[indexPath.row]
             download(file)
         }
+    }
+    
+    func getNextPartOfFiles()
+    {
+        if isDownloadingMetadata
+        {
+            return
+        }
+        guard nextPageToken != nil else
+        {
+            isDownloadingMetadata = false
+            return
+        }
+        getFiles { (_) in }
     }
 }
 

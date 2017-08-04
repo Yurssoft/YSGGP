@@ -97,13 +97,14 @@ class YSDriveFileDownloader : NSObject
         downloadNextFile()
     }
     
+    //TODO:add pageToken for databae manager
     func downloadFolder(file: YSDriveFileProtocol)
     {
         let folder = YSFolder()
         folder.folderID = file.fileDriveIdentifier
         folder.folderName = file.fileName
         
-        YSDatabaseManager.files(for: folder, YSError()) { (filesToDownload, error) in
+        YSDatabaseManager.offlineFiles(pageToken: "", folder: folder, YSError()) { (filesToDownload, _, _) in
             for fileToDownload in filesToDownload
             {
                 if fileToDownload.isAudio
