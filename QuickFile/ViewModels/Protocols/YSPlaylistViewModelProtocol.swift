@@ -32,6 +32,6 @@ protocol YSPlaylistViewModelProtocol
     func folder(at index: Int) -> YSDriveFileProtocol?
     func useFile(at folder: Int, file: Int)
     func removeDownloads()
-    func getFiles(completion: @escaping CompletionHandler)
+    func getFiles(completion: @escaping ErrorCompletionHandler)
     func indexPath(of file : YSDriveFileProtocol) -> IndexPath
 }

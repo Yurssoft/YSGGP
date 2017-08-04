@@ -104,7 +104,7 @@ class YSPlaylistViewModel : YSPlaylistViewModelProtocol
         
     }
     
-    func getFiles(completion: @escaping CompletionHandler)
+    func getFiles(completion: @escaping ErrorCompletionHandler)
     {
         files = []
         model?.allFiles()

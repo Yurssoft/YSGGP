@@ -138,11 +138,14 @@ extension YSDriveSearchController : YSDriveSearchViewModelViewDelegate
         }
     }
     
-    func metadataNextPageFilesDownloadingStatusDidChange(viewModel: YSDriveSearchViewModelProtocol)
+    func metadataDownloadStatusDidChange(viewModel: YSDriveSearchViewModelProtocol)
     {
-        if !viewModel.isDownloadingNextPageOfFiles
+        DispatchQueue.main.async
         {
-            tableView.mj_footer.endRefreshing()
+            if !viewModel.isDownloadingMetadata
+            {
+                self.tableView.mj_footer.endRefreshing()
+            }
         }
     }
     

@@ -163,7 +163,7 @@ class YSDatabaseManager
         }
     }
     
-    class func deleteAllDownloads(_ completionHandler: @escaping CompletionHandler)
+    class func deleteAllDownloads(_ completionHandler: @escaping ErrorCompletionHandler)
     {
         if let ref = referenceForCurrentUser()
         {
@@ -190,7 +190,7 @@ class YSDatabaseManager
         }
     }
     
-    class func deletePlayedDownloads(_ completionHandler: @escaping CompletionHandler)
+    class func deletePlayedDownloads(_ completionHandler: @escaping ErrorCompletionHandler)
     {
         if let ref = referenceForCurrentUser()
         {
@@ -220,7 +220,7 @@ class YSDatabaseManager
         }
     }
     
-    class func deleteDatabase(_ completionHandler: @escaping CompletionHandler)
+    class func deleteDatabase(_ completionHandler: @escaping ErrorCompletionHandler)
     {
         if let ref = referenceForCurrentUser()
         {

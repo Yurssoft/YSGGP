@@ -18,7 +18,7 @@ enum YSSearchSectionType : String
 protocol YSDriveSearchViewModelViewDelegate: class
 {
     func filesDidChange(viewModel: YSDriveSearchViewModelProtocol)
-    func metadataNextPageFilesDownloadingStatusDidChange(viewModel: YSDriveSearchViewModelProtocol)
+    func metadataDownloadStatusDidChange(viewModel: YSDriveSearchViewModelProtocol)
     func errorDidChange(viewModel: YSDriveSearchViewModelProtocol, error: YSErrorProtocol)
     func downloadErrorDidChange(viewModel: YSDriveSearchViewModelProtocol, error: YSErrorProtocol, file : YSDriveFileProtocol)
     func downloadErrorDidChange(viewModel: YSDriveSearchViewModelProtocol, error: YSErrorProtocol, download : YSDownloadProtocol)
@@ -41,7 +41,6 @@ protocol YSDriveSearchViewModelProtocol
     var isDownloadingMetadata: Bool { get }
     var error : YSErrorProtocol { get }
     var searchTerm : String { get set }
-    var isDownloadingNextPageOfFiles: Bool { get }
     var sectionType: YSSearchSectionType { get }
     
     func subscribeToDownloadingProgress()
@@ -49,7 +48,7 @@ protocol YSDriveSearchViewModelProtocol
     func file(at index: Int) -> YSDriveFileProtocol?
     func download(for file: YSDriveFileProtocol) -> YSDownloadProtocol?
     func useFile(at index: Int)
-    func getFiles(sectionType: YSSearchSectionType, searchTerm: String, completion: @escaping CompletionHandler)
+    func getFiles(sectionType: YSSearchSectionType, searchTerm: String, completion: @escaping FilesCompletionHandler)
     func searchViewControllerDidFinish()
     func download(_ file : YSDriveFileProtocol)
     func stopDownloading(_ file : YSDriveFileProtocol)

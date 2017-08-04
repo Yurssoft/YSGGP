@@ -10,7 +10,8 @@ import Foundation
 import UIKit
 import SwiftMessages
 
-typealias CompletionHandler = (_ error: YSErrorProtocol?) -> Swift.Void
+typealias FilesCompletionHandler = (_ files:[YSDriveFileProtocol]) -> Swift.Void
+typealias ErrorCompletionHandler = (_ error:YSErrorProtocol?) -> Swift.Void
 
 struct YSConstants
 {

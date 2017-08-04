@@ -12,7 +12,7 @@ typealias DriveSearchCompletionHandler = ([YSDriveFileProtocol], String, YSError
 
 protocol YSDriveSearchModelProtocol
 {
-    func getFiles(for searchTerm: String, sectionType: YSSearchSectionType, nextPageToken: String, _ completionHandler: @escaping DriveSearchCompletionHandler)
+    func getFiles(for searchTerm: String, sectionType: YSSearchSectionType, nextPageToken: String?, _ completionHandler: @escaping DriveSearchCompletionHandler)
     
     func download(_ file : YSDriveFileProtocol)
     

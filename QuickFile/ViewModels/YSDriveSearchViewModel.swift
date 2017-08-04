@@ -21,9 +21,15 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
     }
     
     var isDownloadingMetadata: Bool = false
+    {
+        didSet
+        {
+            viewDelegate?.metadataDownloadStatusDidChange(viewModel: self)
+        }
+    }
     
     var error : YSErrorProtocol = YSError()
-        {
+    {
         didSet
         {
             if !error.isEmpty()
@@ -37,9 +43,9 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
     {
         didSet
         {
-            nextPageToken = ""
-            getFiles(sectionType: sectionType, searchTerm: searchTerm, completion: { (error) in
-                self.viewDelegate?.filesDidChange(viewModel: self)
+            nextPageToken = nil
+            getFiles(sectionType: sectionType, searchTerm: searchTerm, completion: { (files) in
+                self.files = files
             })
         }
     }
@@ -52,15 +58,8 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
         }
     }
     
-    fileprivate var nextPageToken: String = ""
-    
-    var isDownloadingNextPageOfFiles: Bool = false
-    {
-        didSet
-        {
-            viewDelegate?.metadataNextPageFilesDownloadingStatusDidChange(viewModel: self)
-        }
-    }
+    //TODO:check in last moment
+    fileprivate var nextPageToken: String?
     
     var sectionType: YSSearchSectionType = YSSearchSectionType(rawValue: YSSearchSectionType.all.rawValue)!
     
@@ -71,15 +70,9 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
     
     func getNextPartOfFiles()
     {
-        if nextPageToken.characters.count < 1
-        {
-            isDownloadingNextPageOfFiles = false
-            return
-        }
-        isDownloadingNextPageOfFiles = true
-        getFiles(sectionType: sectionType, searchTerm: searchTerm, completion: { (error) in
-            self.isDownloadingNextPageOfFiles = false
-            self.viewDelegate?.filesDidChange(viewModel: self)
+        guard nextPageToken != nil, !isDownloadingMetadata else { return }
+        getFiles(sectionType: sectionType, searchTerm: searchTerm, completion: { (files) in
+            self.files.append(contentsOf: files)
         })
     }
     
@@ -104,18 +97,21 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
         coordinatorDelegate.searchViewModelDidSelectFile(self, file: files[index])
     }
     
-    func getFiles(sectionType: YSSearchSectionType, searchTerm: String, completion: @escaping CompletionHandler)
+    //TODO: check all completion for weak
+    func getFiles(sectionType: YSSearchSectionType, searchTerm: String, completion: @escaping FilesCompletionHandler)
     {
+        if isDownloadingMetadata
+        {
+            return
+        }
         self.sectionType = sectionType
         isDownloadingMetadata = true
         model?.getFiles(for: searchTerm, sectionType: sectionType, nextPageToken: nextPageToken)
         { (files, nextPageToken, error) in
-            //TODO: check when nextPageToken = nil is all ok
-            self.nextPageToken.characters.count < 1 ? self.files = files : self.files.append(contentsOf: files)
+            completion(files)
             self.nextPageToken = nextPageToken
             self.isDownloadingMetadata = false
             self.error = error!
-            completion(error)
         }
     }
     

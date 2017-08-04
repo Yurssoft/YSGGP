@@ -67,7 +67,10 @@ class YSDriveViewModel: YSDriveViewModelProtocol
             {
                 return
             }
-            getFiles({_ in })
+            getFiles
+            { files in
+                self.files = files
+            }
         }
     }
     
@@ -112,7 +115,7 @@ class YSDriveViewModel: YSDriveViewModelProtocol
         viewDelegate?.filesDidChange(viewModel: self)
     }
     
-    func getFiles(_ completion: @escaping CompletionHandler)
+    func getFiles(_ completion: @escaping FilesCompletionHandler)
     {
         if isDownloadingMetadata
         {
@@ -124,7 +127,7 @@ class YSDriveViewModel: YSDriveViewModelProtocol
         model?.getFiles(pageToken: currentPageToken, nextPageToken: nextPageToken)
         { (files, error, nextPageToken) in
             self.isDownloadingMetadata = false
-            self.files = files
+            completion(files)
             self.error = error!
             self.nextPageToken = nextPageToken
         }
@@ -186,16 +189,11 @@ class YSDriveViewModel: YSDriveViewModelProtocol
     
     func getNextPartOfFiles()
     {
-        if isDownloadingMetadata
-        {
-            return
+        guard nextPageToken != nil, !isDownloadingMetadata else { return }
+        getFiles
+        { (files) in
+            self.files.append(contentsOf: files)
         }
-        guard nextPageToken != nil else
-        {
-            isDownloadingMetadata = false
-            return
-        }
-        getFiles { (_) in }
     }
 }
 

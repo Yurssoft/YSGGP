@@ -39,13 +39,6 @@ class YSDriveViewController: UITableViewController
         let nib = UINib(nibName: YSDriveFileTableViewCell.nameOfClass, bundle: bundle)
         tableView.register(nib, forCellReuseIdentifier: YSDriveFileTableViewCell.nameOfClass)
         
-        
-        
-        tableView.mj_footer = MJRefreshAutoNormalFooter.init
-            { [weak self] () -> Void in
-                self?.viewModel?.getNextPartOfFiles()
-        }
-        
         tableView.emptyDataSetSource = self
         tableView.emptyDataSetDelegate = self
         tableView.tableFooterView = UIView()
@@ -77,8 +70,31 @@ class YSDriveViewController: UITableViewController
     
     func configurePullToRefresh()
     {
+        tableView.mj_footer = MJRefreshAutoNormalFooter.init
+            { [weak self] () -> Void in
+                guard let viewModel = self?.viewModel else { return }
+                if viewModel.isDownloading
+                {
+                    self?.tableView.mj_footer.endRefreshing()
+                    return
+                }
+                if !viewModel.isLoggedIn
+                {
+                    self?.showNotLoggedInMessage()
+                    self?.tableView.mj_footer.endRefreshing()
+                    return
+                }
+                self?.viewModel?.getNextPartOfFiles()
+        }
+        
         tableView.mj_header = MJRefreshNormalHeader.init(refreshingBlock:
         { [weak self] () -> Void in
+            guard let isDownloading = self?.viewModel?.isDownloadingMetadata else { return }
+            if isDownloading
+            {
+                self?.tableView.mj_header.endRefreshing()
+                return
+            }
             self?.getFiles()
         })
     }
