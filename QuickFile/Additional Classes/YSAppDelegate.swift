@@ -20,6 +20,8 @@ protocol YSUpdatingDelegate: class
     func filesDidChange()
 }
 
+//TODO: if we download file from search crash when we try to play it
+
 @UIApplicationMain
 class YSAppDelegate: UIResponder, UIApplicationDelegate
 {
