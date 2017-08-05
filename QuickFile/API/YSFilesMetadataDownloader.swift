@@ -22,9 +22,10 @@ class YSFilesMetadataDownloader
         {  request, error in
             if var err = error
             {
+                //TODO: remove duplicated code
                 if err.debugInfo.contains("connection appears to be offline")
                 {
-                    err.update(errorType: .couldNotGetFileList, messageType: .warning, title: "Warning", message: "Could not get list, no internet")
+                    err.update(errorType: .couldNotGetFileList, messageType: .warning, title: "Warning", message: YSConstants.kNoInternetMessage)
                 }
                 else if err.errorType == YSErrorType.notLoggedInToDrive
                 {
@@ -49,7 +50,7 @@ class YSFilesMetadataDownloader
                     }
                     else if err.debugInfo.contains("connection appears to be offline")
                     {
-                        err.update(errorType: .couldNotGetFileList, messageType: .warning, title: "Warning", message: "Could not get list, no internet")
+                        err.update(errorType: .couldNotGetFileList, messageType: .warning, title: "Warning", message: YSConstants.kNoInternetMessage)
                     }
                     else
                     {

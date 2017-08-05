@@ -72,6 +72,13 @@ class YSDriveViewModel: YSDriveViewModelProtocol
     }
     
     fileprivate var pageTokens: [String] = [YSConstants.kFirstPageToken]
+    var allPagesDownloaded : Bool = false
+    {
+        didSet
+        {
+            viewDelegate?.allPagesDownloaded(viewModel: self)
+        }
+    }
     
     func file(at index: Int) -> YSDriveFileProtocol?
     {
@@ -114,7 +121,11 @@ class YSDriveViewModel: YSDriveViewModelProtocol
             self.isDownloadingMetadata = false
             completion(files)
             self.error = error!
-            guard let token = nextPageToken else { return }
+            guard let token = nextPageToken else
+            {
+                self.allPagesDownloaded = true
+                return
+            }
             self.pageTokens.append(token)
         }
     }

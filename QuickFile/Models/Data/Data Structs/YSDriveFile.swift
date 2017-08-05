@@ -16,6 +16,16 @@ struct YSDriveFile : YSDriveFileProtocol
     var mimeType : String
     var pageToken : String
     var isAudio : Bool
+    {
+        if !mimeType.isEmpty && (mimeType.contains("mp3") || mimeType.contains("audio") || mimeType.contains("mpeg"))
+        {
+            return true
+        }
+        else
+        {
+            return false
+        }
+    }
     var fileDriveIdentifier : String
     var modifiedTime : String = ""
     var folder : YSFolder = YSFolder()
@@ -30,15 +40,6 @@ struct YSDriveFile : YSDriveFileProtocol
         self.fileName = checkStringForNil(string: fileName)
         self.fileSize = checkStringForNil(string: fileSize)
         self.mimeType = checkStringForNil(string: mimeType)
-        let mimeTypes = checkStringForNil(string: mimeType)
-        if !mimeTypes.isEmpty && (mimeTypes.contains("mp3") || mimeTypes.contains("audio") || mimeTypes.contains("mpeg"))
-        {
-            self.isAudio = true
-        }
-        else
-        {
-            self.isAudio = false
-        }
         self.fileDriveIdentifier = checkStringForNil(string: fileDriveIdentifier)
         self.folder.folderName = checkStringForNil(string: folderName)
         self.folder.folderID = checkStringForNil(string: folderID)
@@ -54,7 +55,6 @@ struct YSDriveFile : YSDriveFileProtocol
     {
         self.fileName = ""
         self.fileSize = ""
-        self.isAudio = false
         self.mimeType = ""
         self.fileDriveIdentifier = ""
         self.playedTime = ""
@@ -120,7 +120,8 @@ struct YSDriveFile : YSDriveFileProtocol
     }
 }
 
-fileprivate func checkStringForNil(string : String?) -> String {
+fileprivate func checkStringForNil(string : String?) -> String
+{
     if string == nil
     {
         return ""

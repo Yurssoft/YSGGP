@@ -25,13 +25,12 @@ public extension Dictionary
                 folder.folderName = value["folderName"]!
                 try! set(folder, key: propertyKey, for: &ysFile)
             }
+            else if propertyKey == "isAudio" { continue }
             else
             {
                 try! set(val ?? "", key: propertyKey, for: &ysFile)
             }
         }
-        let mimeType = ysFile.mimeType
-        ysFile.isAudio = !mimeType.isEmpty && (mimeType.contains("mp3") || mimeType.contains("audio") || mimeType.contains("mpeg"))
         return ysFile
     }
 }

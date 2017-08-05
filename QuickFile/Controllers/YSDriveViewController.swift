@@ -222,6 +222,18 @@ extension YSDriveViewController: YSDriveViewModelViewDelegate
         }
     }
     
+    func allPagesDownloaded(viewModel: YSDriveViewModelProtocol)
+    {
+        DispatchQueue.main.async
+        { [weak self] in
+            guard let viewModel = self?.viewModel else { return }
+            if viewModel.allPagesDownloaded
+            {
+                self?.tableView.mj_footer.endRefreshingWithNoMoreData()
+            }
+        }
+    }
+    
     func downloadErrorDidChange(viewModel: YSDriveViewModelProtocol, error: YSErrorProtocol, file : YSDriveFileProtocol)
     {
         let message = MessageView.viewFromNib(layout: .CardView)
@@ -254,6 +266,19 @@ extension YSDriveViewController: YSDriveViewModelViewDelegate
     
     func errorDidChange(viewModel: YSDriveViewModelProtocol, error: YSErrorProtocol)
     {
+        if error.errorType == .couldNotGetFileList && error.message == YSConstants.kNoInternetMessage
+        {
+            let statusBarMessage = MessageView.viewFromNib(layout: .StatusLine)
+            statusBarMessage.backgroundView.backgroundColor = UIColor.orange
+            statusBarMessage.bodyLabel?.textColor = UIColor.white
+            statusBarMessage.configureContent(body: error.message)
+            var messageConfig = SwiftMessages.defaultConfig
+            messageConfig.presentationContext = .window(windowLevel: UIWindowLevelNormal)
+            messageConfig.preferredStatusBarStyle = .lightContent
+            messageConfig.duration = .forever
+            SwiftMessages.show(config: messageConfig, view: statusBarMessage)
+            return
+        }
         let message = MessageView.viewFromNib(layout: .CardView)
         message.configureTheme(error.messageType)
         message.configureDropShadow()
@@ -263,7 +288,7 @@ extension YSDriveViewController: YSDriveViewModelViewDelegate
         {
         case .cancelledLoginToDrive, .couldNotLoginToDrive, .notLoggedInToDrive:
             message.buttonTapHandler =
-                { _ in
+            { _ in
                 self.viewModel?.loginToDrive()
                 SwiftMessages.hide()
             }

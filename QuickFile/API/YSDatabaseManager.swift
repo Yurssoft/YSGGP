@@ -23,6 +23,7 @@ class YSDatabaseManager
     {
         if let ref = referenceForCurrentUser()
         {
+            //TODO: test moving file
             ref.child("files").runTransactionBlock({ (dbFilesData: MutableData) -> TransactionResult in
                 var dbFilesArrayDict = databaseFilesDictionary(from: dbFilesData)
                 let rootFolderID = YSFolder.rootFolder().folderID
@@ -46,36 +47,39 @@ class YSDatabaseManager
                 {
                     let currentFileIdentifier = dbFile.value["fileDriveIdentifier"] as! String
                     let isRootFolder = (currentFileIdentifier == YSFolder.rootFolder().folderID)
-                    //TODO: file can be in other folder because it was moved
-//                    let dbFileFolder = dbFile.value["fileDriveIdentifier"] as! String
-//                    let fileIsNotInCurrentFolder =
                     if isRootFolder
                     {
+                        isRootFolderAdded = isRootFolder
                         continue
                     }
-                    isRootFolderAdded = currentFileIdentifier == rootFolderID
                     if let remoteFile = remoteFilesDict[currentFileIdentifier]
                     {
                         dbFile.value = mergeFiles(dbFile: &dbFile.value, remoteFile: remoteFile, folder: folder)
+                        dbFile.value["pageToken"] = pageToken
+                        var ysFile = dbFile.value.toYSFile()
+                        checkIfFileExists(file: &ysFile)
+                        
+                        ysFiles.append(ysFile)
                         remoteFilesDict[currentFileIdentifier] = nil
                     }
                     else
                     {
-                        dbFile.value["isDeletedFromDrive"] = true
+                        if let dbFileFolder = dbFile.value["folder"] as? [String : String?],
+                            let dbFileFolderIdentifier = dbFileFolder["folderID"],
+                            dbFileFolderIdentifier == folder.folderID
+                        {
+                            dbFile.value["isDeletedFromDrive"] = true
+                        }
                     }
-                    dbFile.value["pageToken"] = pageToken
-                    var ysFile = dbFile.value.toYSFile()
-                    checkIfFileExists(file: &ysFile)
-                    ysFiles.append(ysFile)
                 }
                 
                 for var remoteFile in remoteFilesDict
                 {
                     remoteFile.value["pageToken"] = pageToken
-                    dbFilesArrayDict[(remoteFile.value["fileDriveIdentifier"] as! String)] = remoteFile.value
-                    var ysFile = remoteFile.value.toYSFile()
-                    ysFile.pageToken = "1"
+                    let ysFile = remoteFile.value.toYSFile()
+                    remoteFile.value["isAudio"] = ysFile.isAudio
                     ysFiles.append(ysFile)
+                    dbFilesArrayDict[(remoteFile.value["fileDriveIdentifier"] as! String)] = remoteFile.value
                 }
                 
                 if !isRootFolderAdded && folder.folderID == rootFolderID

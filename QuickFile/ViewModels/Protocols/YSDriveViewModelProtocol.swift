@@ -11,6 +11,7 @@ import Foundation
 protocol YSDriveViewModelViewDelegate: class
 {
     func filesDidChange(viewModel: YSDriveViewModelProtocol)
+    func allPagesDownloaded(viewModel: YSDriveViewModelProtocol)
     func metadataDownloadStatusDidChange(viewModel: YSDriveViewModelProtocol)
     func errorDidChange(viewModel: YSDriveViewModelProtocol, error: YSErrorProtocol)
     func downloadErrorDidChange(viewModel: YSDriveViewModelProtocol, error: YSErrorProtocol, download : YSDownloadProtocol)
@@ -38,6 +39,7 @@ protocol YSDriveViewModelProtocol
     var isLoggedIn: Bool { get }
     var isDownloadingMetadata: Bool { get }
     var error : YSErrorProtocol { get }
+    var allPagesDownloaded : Bool { get }
     
     func file(at index: Int) -> YSDriveFileProtocol?
     func download(for file: YSDriveFileProtocol) -> YSDownloadProtocol?
@@ -51,7 +53,6 @@ protocol YSDriveViewModelProtocol
     func index(of file : YSDriveFileProtocol) -> Int
     func deleteDownloadsFor(_ indexes : [IndexPath])
     func downloadFilesFor(_ indexes : [IndexPath])
-    //TODO: add function for refreshing files not get files
     func refreshFiles(_ completion: @escaping () -> Swift.Void)
     func getNextPartOfFiles(_ completion: @escaping () -> Swift.Void)
 }
