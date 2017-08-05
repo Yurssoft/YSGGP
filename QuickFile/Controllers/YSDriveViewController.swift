@@ -18,7 +18,7 @@ class YSDriveViewController: UITableViewController
     weak var toolbarView: YSToolbarView!
     
     var selectedIndexes : [IndexPath] = []
-    //TODO: make relative urls, pagination, logged as, download wifi only, do not delete files from remote even if they are deleted
+    //TODO: make relative urls, pagination, logged as, download wifi only, do not delete files from remote even if they are deleted, disallow refreshes in edit
     var viewModel: YSDriveViewModelProtocol?
     {
         willSet
