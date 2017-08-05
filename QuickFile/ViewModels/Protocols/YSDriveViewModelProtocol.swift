@@ -44,7 +44,6 @@ protocol YSDriveViewModelProtocol
     func useFile(at index: Int)
     func loginToDrive()
     func removeDownloads()
-    func getFiles(_ completion: @escaping FilesCompletionHandler)
     func driveViewControllerDidFinish()
     func driveViewControllerDidRequestedSearch()
     func download(_ file : YSDriveFileProtocol)
@@ -53,5 +52,6 @@ protocol YSDriveViewModelProtocol
     func deleteDownloadsFor(_ indexes : [IndexPath])
     func downloadFilesFor(_ indexes : [IndexPath])
     //TODO: add function for refreshing files not get files
-    func getNextPartOfFiles()
+    func refreshFiles(_ completion: @escaping () -> Swift.Void)
+    func getNextPartOfFiles(_ completion: @escaping () -> Swift.Void)
 }

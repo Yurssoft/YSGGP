@@ -62,15 +62,7 @@ class YSDriveViewModel: YSDriveViewModelProtocol
     {
         didSet
         {
-            files = []
-            if !isLoggedIn
-            {
-                return
-            }
-            getFiles
-            { files in
-                self.files = files
-            }
+            refreshFiles { }
         }
     }
     
@@ -79,8 +71,7 @@ class YSDriveViewModel: YSDriveViewModelProtocol
         return files.count
     }
     
-    fileprivate var nextPageToken: String?
-    fileprivate var currentPageToken: String = YSConstants.kFirstPageToken
+    fileprivate var pageTokens: [String] = [YSConstants.kFirstPageToken]
     
     func file(at index: Int) -> YSDriveFileProtocol?
     {
@@ -115,21 +106,16 @@ class YSDriveViewModel: YSDriveViewModelProtocol
         viewDelegate?.filesDidChange(viewModel: self)
     }
     
-    func getFiles(_ completion: @escaping FilesCompletionHandler)
+    fileprivate func getFiles(_ completion: @escaping FilesCompletionHandler)
     {
-        if isDownloadingMetadata
-        {
-            return
-        }
         isDownloadingMetadata = true
-        
-        //TODO: when add files?
-        model?.getFiles(pageToken: currentPageToken, nextPageToken: nextPageToken)
+        model?.getFiles(pageToken: pageTokens.first!, nextPageToken: pageTokens.count > 1 ? pageTokens.last : nil)
         { (files, error, nextPageToken) in
             self.isDownloadingMetadata = false
             completion(files)
             self.error = error!
-            self.nextPageToken = nextPageToken
+            guard let token = nextPageToken else { return }
+            self.pageTokens.append(token)
         }
     }
     
@@ -145,6 +131,11 @@ class YSDriveViewModel: YSDriveViewModelProtocol
     
     func download(_ file : YSDriveFileProtocol)
     {
+        if !isLoggedIn
+        {
+            showNotLoggedInMessage()
+            return
+        }
         model?.download(file)
     }
     
@@ -187,13 +178,59 @@ class YSDriveViewModel: YSDriveViewModelProtocol
         }
     }
     
-    func getNextPartOfFiles()
+    func refreshFiles(_ completion: @escaping () -> Swift.Void)
     {
-        guard nextPageToken != nil, !isDownloadingMetadata else { return }
+        if !isLoggedIn
+        {
+            callCompletion(completion)
+            showNotLoggedInMessage()
+            return
+        }
+        guard !isDownloadingMetadata else
+        {
+            callCompletion(completion)
+            return
+        }
+        pageTokens = [YSConstants.kFirstPageToken]
+        getFiles
+        { files in
+            self.files = files
+            self.callCompletion(completion)
+        }
+    }
+    
+    func getNextPartOfFiles(_ completion: @escaping () -> Swift.Void)
+    {
+        if !isLoggedIn
+        {
+            callCompletion(completion)
+            showNotLoggedInMessage()
+            return
+        }
+        guard !isDownloadingMetadata, pageTokens.count > 1 else
+        {
+            callCompletion(completion)
+            return
+        }
         getFiles
         { (files) in
             self.files.append(contentsOf: files)
+            self.callCompletion(completion)
         }
+    }
+    
+    func callCompletion(_ completion: @escaping () -> Swift.Void)
+    {
+        DispatchQueue.main.async
+        {
+            completion()
+        }
+    }
+    
+    fileprivate func showNotLoggedInMessage()
+    {
+        let errorMessage = YSError(errorType: YSErrorType.notLoggedInToDrive, messageType: Theme.warning, title: "Warning", message: "Could not get list, please login", buttonTitle: "Login", debugInfo: "")
+        error = errorMessage
     }
 }
 

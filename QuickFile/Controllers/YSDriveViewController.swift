@@ -71,51 +71,37 @@ class YSDriveViewController: UITableViewController
     func configurePullToRefresh()
     {
         tableView.mj_footer = MJRefreshAutoNormalFooter.init
-            { [weak self] () -> Void in
-                guard let viewModel = self?.viewModel else { return }
-                if viewModel.isDownloading
-                {
-                    self?.tableView.mj_footer.endRefreshing()
-                    return
-                }
-                if !viewModel.isLoggedIn
-                {
-                    self?.showNotLoggedInMessage()
-                    self?.tableView.mj_footer.endRefreshing()
-                    return
-                }
-                self?.viewModel?.getNextPartOfFiles()
+        { [weak self] () -> Void in
+            guard let viewModel = self?.viewModel else { return }
+            viewModel.getNextPartOfFiles
+            {
+                self?.tableView.mj_footer.endRefreshing()
+            }
         }
+        //TODO: duplicated code, is in main thread?
         
         tableView.mj_header = MJRefreshNormalHeader.init(refreshingBlock:
         { [weak self] () -> Void in
-            guard let isDownloading = self?.viewModel?.isDownloadingMetadata else { return }
-            if isDownloading
+            guard let viewModel = self?.viewModel else { return }
+            viewModel.refreshFiles
             {
                 self?.tableView.mj_header.endRefreshing()
-                return
             }
-            self?.getFiles()
         })
     }
     
     override func viewWillAppear(_ animated: Bool)
     {
         super.viewWillAppear(animated)
-        showNotLoggedInMessage()
+        guard let viewModel = viewModel, !viewModel.isLoggedIn else { return }
+        let errorMessage = YSError(errorType: YSErrorType.notLoggedInToDrive, messageType: Theme.warning, title: "Warning", message: "Could not get list, please login", buttonTitle: "Login", debugInfo: "")
+        errorDidChange(viewModel: viewModel, error: errorMessage)
     }
     
     override func viewWillDisappear(_ animated: Bool)
     {
         super.viewWillDisappear(animated)
         SwiftMessages.hide()
-    }
-    
-    func showNotLoggedInMessage()
-    {
-        guard let viewModel = viewModel, !viewModel.isLoggedIn else { return }
-        let errorMessage = YSError(errorType: YSErrorType.notLoggedInToDrive, messageType: Theme.warning, title: "Warning", message: "Could not get list, please login", buttonTitle: "Login", debugInfo: "")
-        errorDidChange(viewModel: viewModel, error: errorMessage)
     }
     
     func deleteToolbarButtonTapped(_ sender: UIBarButtonItem)
@@ -203,19 +189,6 @@ class YSDriveViewController: UITableViewController
         }
         return .none
     }
-    
-    func getFiles()
-    {
-        if let viewModel = viewModel, !viewModel.isLoggedIn
-        {
-            showNotLoggedInMessage()
-            tableView.mj_header.endRefreshing()
-            return
-        }
-        viewModel?.getFiles({ _ in
-            self.tableView.mj_header.endRefreshing()
-        })
-    }
 }
 
 extension YSDriveViewController: YSDriveFileTableViewCellDelegate
@@ -241,17 +214,11 @@ extension YSDriveViewController: YSDriveViewModelViewDelegate
         }
     }
     
-    //TODO: do not allow pull to refresh and pull up in same moment
     func metadataDownloadStatusDidChange(viewModel: YSDriveViewModelProtocol)
     {
-        SwiftMessages.hide()
         DispatchQueue.main.async
         {
             [weak self] in self?.navigationController?.setIndeterminate(viewModel.isDownloadingMetadata)
-            if !viewModel.isDownloadingMetadata
-            {
-                self?.tableView.mj_footer.endRefreshing()
-            }
         }
     }
     
@@ -287,20 +254,6 @@ extension YSDriveViewController: YSDriveViewModelViewDelegate
     
     func errorDidChange(viewModel: YSDriveViewModelProtocol, error: YSErrorProtocol)
     {
-        if error.errorType == .couldNotGetFileList
-        {
-            let statusBarMessage = MessageView.viewFromNib(layout: .StatusLine)
-            statusBarMessage.backgroundView.backgroundColor = UIColor.orange
-            statusBarMessage.bodyLabel?.textColor = UIColor.white
-            statusBarMessage.configureContent(body: error.message)
-            var messageConfig = SwiftMessages.defaultConfig
-            messageConfig.presentationContext = .window(windowLevel: UIWindowLevelNormal)
-            messageConfig.preferredStatusBarStyle = .lightContent
-            messageConfig.duration = .forever
-            SwiftMessages.show(config: messageConfig, view: statusBarMessage)
-            return
-        }
-        
         let message = MessageView.viewFromNib(layout: .CardView)
         message.configureTheme(error.messageType)
         message.configureDropShadow()
@@ -326,8 +279,8 @@ extension YSDriveViewController: YSDriveViewModelViewDelegate
         case .couldNotGetFileList:
             message.buttonTapHandler =
             { _ in
-                self.getFiles()
                 SwiftMessages.hide()
+                viewModel.refreshFiles {}
             }
             break
         default: break
@@ -451,14 +404,7 @@ extension YSDriveViewController : DZNEmptyDataSetDelegate
     func emptyDataSet(_ scrollView: UIScrollView!, didTap button: UIButton!)
     {
         guard let viewModel = viewModel else { return }
-        if viewModel.isLoggedIn
-        {
-            getFiles()
-        }
-        else
-        {
-            viewModel.loginToDrive()
-        }
+        viewModel.isLoggedIn ? self.viewModel?.refreshFiles {} : viewModel.loginToDrive()
     }
     
     func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView!) -> Bool

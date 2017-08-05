@@ -44,11 +44,15 @@ class YSDatabaseManager
                 
                 for var dbFile in dbFilesArrayDict
                 {
-                    if (dbFile.value["fileDriveIdentifier"] as! String) == YSFolder.rootFolder().folderID
+                    let currentFileIdentifier = dbFile.value["fileDriveIdentifier"] as! String
+                    let isRootFolder = (currentFileIdentifier == YSFolder.rootFolder().folderID)
+                    //TODO: file can be in other folder because it was moved
+//                    let dbFileFolder = dbFile.value["fileDriveIdentifier"] as! String
+//                    let fileIsNotInCurrentFolder =
+                    if isRootFolder
                     {
                         continue
                     }
-                    let currentFileIdentifier = dbFile.value["fileDriveIdentifier"] as! String
                     isRootFolderAdded = currentFileIdentifier == rootFolderID
                     if let remoteFile = remoteFilesDict[currentFileIdentifier]
                     {
@@ -131,7 +135,7 @@ class YSDatabaseManager
         return dbFile
     }
     
-    //TODO: use page token to get files
+    //TODO: use page token to get files offline
     class func offlineFiles(pageToken: String, folder: YSFolder,_ error: YSError,_ completionHandler: @escaping AllFilesCompletionHandler)
     {
         if let ref = referenceForCurrentUser()
