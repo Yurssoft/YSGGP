@@ -58,7 +58,7 @@ class YSDriveSearchModel : YSDriveSearchModelProtocol
             }
             guard let filesDictionary = filesDictionary else { return completionHandler([], "", YSError()) }
             var ysFiles = [YSDriveFileProtocol]()
-            var nextPageToken = String()
+            var nextPageToken : String?
             for fileKey in filesDictionary.keys
             {
                 switch fileKey
@@ -68,7 +68,7 @@ class YSDriveSearchModel : YSDriveSearchModelProtocol
                     nextPageToken = token
                     continue
                     
-                    case "files":
+                case "files":
                     
                     let files = filesDictionary[fileKey] as! [Any]
                     

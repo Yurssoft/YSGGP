@@ -8,7 +8,7 @@
 
 import Foundation
 
-typealias DriveSearchCompletionHandler = ([YSDriveFileProtocol], String, YSErrorProtocol?) -> Swift.Void
+typealias DriveSearchCompletionHandler = ([YSDriveFileProtocol], String?, YSErrorProtocol?) -> Swift.Void
 
 protocol YSDriveSearchModelProtocol
 {

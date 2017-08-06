@@ -52,7 +52,6 @@ class YSDriveSearchController : UITableViewController
                 }
             }
         }
-        //TODO: why bad request?
         let log = SwiftyBeaver.self
         log.info("")
     }
