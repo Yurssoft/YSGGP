@@ -20,7 +20,7 @@ protocol YSUpdatingDelegate: class
     func filesDidChange()
 }
 
-//TODO: if we download file from search crash when we try to play it
+//TODO: if we download file from search show it in playlist, when deleting downloads delete all from disk
 
 @UIApplicationMain
 class YSAppDelegate: UIResponder, UIApplicationDelegate

@@ -12,6 +12,13 @@ import SwiftMessages
 class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
 {
     var model: YSDriveSearchModelProtocol?
+    {
+        didSet
+        {
+            refreshFiles { }
+        }
+    }
+    
     weak var viewDelegate: YSDriveSearchViewModelViewDelegate?
     weak var coordinatorDelegate: YSDriveSearchViewModelCoordinatorDelegate?
     
@@ -43,10 +50,7 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
     {
         didSet
         {
-            nextPageToken = nil
-            getFiles(sectionType: sectionType, searchTerm: searchTerm, completion: { (files) in
-                self.files = files
-            })
+            refreshFiles { }
         }
     }
     
@@ -58,22 +62,40 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
         }
     }
     
-    //TODO:check in last moment
     fileprivate var nextPageToken: String?
     
     var sectionType: YSSearchSectionType = YSSearchSectionType(rawValue: YSSearchSectionType.all.rawValue)!
+    {
+        didSet
+        {
+            refreshFiles { }
+        }
+    }
     
     func subscribeToDownloadingProgress()
     {
         coordinatorDelegate?.subscribeToDownloadingProgress()
     }
     
-    func getNextPartOfFiles()
+    func refreshFiles(_ completion: @escaping () -> Swift.Void)
+    {
+        guard !isDownloadingMetadata else { return }
+        nextPageToken = nil
+        getFiles
+        { (files) in
+            self.files = files
+            completion()
+        }
+    }
+    
+    func getNextPartOfFiles(_ completion: @escaping () -> Swift.Void)
     {
         guard nextPageToken != nil, !isDownloadingMetadata else { return }
-        getFiles(sectionType: sectionType, searchTerm: searchTerm, completion: { (files) in
+        getFiles
+        { (files) in
             self.files.append(contentsOf: files)
-        })
+            completion()
+        }
     }
     
     func file(at index: Int) -> YSDriveFileProtocol?
@@ -96,15 +118,9 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
         guard let coordinatorDelegate = coordinatorDelegate, index < files.count else { return }
         coordinatorDelegate.searchViewModelDidSelectFile(self, file: files[index])
     }
-    
-    //TODO: check all completion for weak
-    func getFiles(sectionType: YSSearchSectionType, searchTerm: String, completion: @escaping FilesCompletionHandler)
+
+    fileprivate func getFiles(_ completion: @escaping FilesCompletionHandler)
     {
-        if isDownloadingMetadata
-        {
-            return
-        }
-        self.sectionType = sectionType
         isDownloadingMetadata = true
         model?.getFiles(for: searchTerm, sectionType: sectionType, nextPageToken: nextPageToken)
         { (files, nextPageToken, error) in
@@ -152,15 +168,12 @@ extension YSDriveSearchViewModel : YSUpdatingDelegate
 
     func downloadDidChange(_ download : YSDownloadProtocol,_ error: YSErrorProtocol?)
     {
-        DispatchQueue.main.async
+        if let error = error
         {
-            if let error = error
-            {
-                self.viewDelegate?.downloadErrorDidChange(viewModel: self, error: error, download: download)
-            }
-            let index = self.files.index(where: {$0.fileDriveIdentifier == download.file.fileDriveIdentifier})
-            guard let indexx = index, self.files.count > indexx else { return }
-            self.viewDelegate?.reloadFileDownload(at: indexx, viewModel: self)
+            self.viewDelegate?.downloadErrorDidChange(viewModel: self, error: error, download: download)
         }
+        let index = self.files.index(where: {$0.fileDriveIdentifier == download.file.fileDriveIdentifier})
+        guard let indexx = index, self.files.count > indexx else { return }
+        self.viewDelegate?.reloadFileDownload(at: indexx, viewModel: self)
     }
 }

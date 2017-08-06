@@ -44,7 +44,7 @@ class YSDriveModel: YSDriveModelProtocol
             if let err = error
             {
                 let yserror = err as! YSError
-                YSDatabaseManager.offlineFiles(pageToken: pageToken, folder: self.currentFolder, yserror, completionHandler)
+                YSDatabaseManager.offlineFiles(folder: self.currentFolder, yserror, completionHandler)
                 return
             }
             YSDatabaseManager.save(pageToken: pageToken, remoteFilesDict: filesDictionary!, self.currentFolder, completionHandler)

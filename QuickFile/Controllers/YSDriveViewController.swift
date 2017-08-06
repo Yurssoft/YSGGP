@@ -75,17 +75,23 @@ class YSDriveViewController: UITableViewController
             guard let viewModel = self?.viewModel else { return }
             viewModel.getNextPartOfFiles
             {
-                self?.tableView.mj_footer.endRefreshing()
+                DispatchQueue.main.async
+                {
+                    self?.tableView.mj_footer.endRefreshing()
+                }
             }
         }
-        //TODO: duplicated code, is in main thread?
+        //TODO: duplicated code
         
         tableView.mj_header = MJRefreshNormalHeader.init(refreshingBlock:
         { [weak self] () -> Void in
             guard let viewModel = self?.viewModel else { return }
             viewModel.refreshFiles
             {
-                self?.tableView.mj_header.endRefreshing()
+                DispatchQueue.main.async
+                {
+                    self?.tableView.mj_header.endRefreshing()
+                }
             }
         })
     }
@@ -245,9 +251,9 @@ extension YSDriveViewController: YSDriveViewModelViewDelegate
         {
         case .couldNotDownloadFile:
             message.buttonTapHandler =
-                { _ in
-                    self.downloadButtonPressed(file)
-                    SwiftMessages.hide()
+            { _ in
+                self.downloadButtonPressed(file)
+                SwiftMessages.hide()
             }
             break
         default: break

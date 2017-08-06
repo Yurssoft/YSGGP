@@ -139,8 +139,7 @@ class YSDatabaseManager
         return dbFile
     }
     
-    //TODO: use page token to get files offline
-    class func offlineFiles(pageToken: String, folder: YSFolder,_ error: YSError,_ completionHandler: @escaping AllFilesCompletionHandler)
+    class func offlineFiles(folder: YSFolder,_ error: YSError,_ completionHandler: @escaping AllFilesCompletionHandler)
     {
         if let ref = referenceForCurrentUser()
         {

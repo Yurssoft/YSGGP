@@ -41,16 +41,20 @@ class YSDriveSearchController : UITableViewController
         let nib = UINib(nibName: YSDriveFileTableViewCell.nameOfClass, bundle: bundle)
         tableView.register(nib, forCellReuseIdentifier: YSDriveFileTableViewCell.nameOfClass)
         
-        
         tableView.mj_footer = MJRefreshAutoNormalFooter.init
         { [weak self] () -> Void in
-            self?.viewModel?.getNextPartOfFiles()
+            guard let viewModel = self?.viewModel else { return }
+            viewModel.getNextPartOfFiles
+            {
+                DispatchQueue.main.async
+                {
+                    self?.tableView.mj_footer.endRefreshing()
+                }
+            }
         }
+        //TODO: why bad request?
         let log = SwiftyBeaver.self
         log.info("")
-        //TODO: move it to viewModel
-        guard let viewModel = viewModel else { return }
-        viewModel.getFiles(sectionType: viewModel.sectionType, searchTerm: viewModel.searchTerm, completion: {_ in })
     }
     
     override func viewWillAppear(_ animated: Bool)
@@ -160,8 +164,8 @@ extension YSDriveSearchController : YSDriveSearchViewModelViewDelegate
         {
         case .couldNotGetFileList:
             message.buttonTapHandler =
-                { _ in
-                    SwiftMessages.hide()
+            { _ in
+                SwiftMessages.hide()
             }
             break
         default:
@@ -208,13 +212,13 @@ extension YSDriveSearchController : YSDriveSearchViewModelViewDelegate
     {
         DispatchQueue.main.async
         {
-                let indexPath = IndexPath.init(row: index, section: 0)
-                if let cell = self.tableView.cellForRow(at: indexPath) as? YSDriveFileTableViewCell
-                {
-                    let file = viewModel.file(at: indexPath.row)
-                    let download = viewModel.download(for: file!)
-                    cell.configureForDrive(file, self, download)
-                }
+            let indexPath = IndexPath.init(row: index, section: 0)
+            if let cell = self.tableView.cellForRow(at: indexPath) as? YSDriveFileTableViewCell
+            {
+                let file = viewModel.file(at: indexPath.row)
+                let download = viewModel.download(for: file!)
+                cell.configureForDrive(file, self, download)
+            }
         }
     }
 }
@@ -233,7 +237,7 @@ extension YSDriveSearchController : UISearchBarDelegate
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int)
     {
         let section = YSSearchSectionType(rawValue: searchBar.scopeButtonTitles![selectedScope])
-        guard let sectionType = section, let viewModel = viewModel, let searchText = searchController.searchBar.text, searchText.characters.count > 1 else { return }
-        viewModel.getFiles(sectionType: sectionType, searchTerm: searchText, completion: {_ in })
+        guard let sectionType = section, var viewModel = viewModel else { return }
+        viewModel.sectionType = sectionType
     }
 }

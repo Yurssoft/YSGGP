@@ -41,14 +41,14 @@ protocol YSDriveSearchViewModelProtocol
     var isDownloadingMetadata: Bool { get }
     var error : YSErrorProtocol { get }
     var searchTerm : String { get set }
-    var sectionType: YSSearchSectionType { get }
+    var sectionType: YSSearchSectionType { get set }
     
     func subscribeToDownloadingProgress()
-    func getNextPartOfFiles()
     func file(at index: Int) -> YSDriveFileProtocol?
     func download(for file: YSDriveFileProtocol) -> YSDownloadProtocol?
     func useFile(at index: Int)
-    func getFiles(sectionType: YSSearchSectionType, searchTerm: String, completion: @escaping FilesCompletionHandler)
+    func refreshFiles(_ completion: @escaping () -> Swift.Void)
+    func getNextPartOfFiles(_ completion: @escaping () -> Swift.Void)
     func searchViewControllerDidFinish()
     func download(_ file : YSDriveFileProtocol)
     func stopDownloading(_ file : YSDriveFileProtocol)
