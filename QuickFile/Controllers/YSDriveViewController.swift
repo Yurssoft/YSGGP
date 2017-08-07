@@ -70,7 +70,7 @@ class YSDriveViewController: UITableViewController
     
     func configurePullToRefresh()
     {
-        tableView.mj_footer = MJRefreshAutoNormalFooter.init
+        let footer = MJRefreshAutoNormalFooter.init
         { [weak self] () -> Void in
             guard let viewModel = self?.viewModel else { return }
             viewModel.getNextPartOfFiles
@@ -81,7 +81,8 @@ class YSDriveViewController: UITableViewController
                 }
             }
         }
-        //TODO: duplicated code
+        footer?.isAutomaticallyHidden = true
+        tableView.mj_footer = footer
         
         tableView.mj_header = MJRefreshNormalHeader.init(refreshingBlock:
         { [weak self] () -> Void in
