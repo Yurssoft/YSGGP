@@ -23,7 +23,7 @@ class YSDatabaseManager
     {
         if let ref = referenceForCurrentUser()
         {
-            //TODO: test moving file
+            //TODO: when moving file - update player
             ref.child("files").runTransactionBlock({ (dbFilesData: MutableData) -> TransactionResult in
                 var dbFilesArrayDict = databaseFilesDictionary(from: dbFilesData)
                 let rootFolderID = YSFolder.rootFolder().folderID
@@ -71,6 +71,7 @@ class YSDatabaseManager
                             dbFile.value["isDeletedFromDrive"] = true
                         }
                     }
+                    dbFilesArrayDict[currentFileIdentifier] = dbFile.value
                 }
                 
                 for var remoteFile in remoteFilesDict
@@ -281,6 +282,24 @@ class YSDatabaseManager
     {
         let error = YSError(errorType: YSErrorType.notLoggedInToDrive, messageType: Theme.warning, title: "Not logged in", message: "Not logged in to drive", buttonTitle: "Login")
         return error
+    }
+    
+    
+    class func update(fileDriveIdentifier: String, isCurrentlyPlaying: Bool, playedTime: String, isPlayed: Bool)
+    {
+        if let ref = referenceForCurrentUser()
+        {
+            ref.child("files/\(fileDriveIdentifier)").runTransactionBlock({ (dbFileData: MutableData) -> TransactionResult in
+                if var dbFile = dbFileData.value as? [String : Any], let currentFileIdentifier = dbFile["fileDriveIdentifier"] as? String, currentFileIdentifier == fileDriveIdentifier
+                {
+                    dbFile["isCurrentlyPlaying"] = isCurrentlyPlaying
+                    dbFile["playedTime"] = playedTime
+                    dbFile["isPlayed"] = isPlayed
+                    ref.child("files/\(fileDriveIdentifier)").setValue(dbFile)
+                }
+                return TransactionResult.abort()
+            })
+        }
     }
     
     class func update(file: YSDriveFileProtocol)

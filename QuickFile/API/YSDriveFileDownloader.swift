@@ -163,7 +163,7 @@ extension YSDriveFileDownloader: URLSessionDownloadDelegate
             do
             {
                 try fileManager.copyItem(at: location, to: download.file.localFilePath()!)
-                YSDatabaseManager.update(file: download.file)
+                //YSDatabaseManager.update(file: download.file)
             }
             catch let error as NSError
             {
@@ -177,8 +177,12 @@ extension YSDriveFileDownloader: URLSessionDownloadDelegate
                 downloads[url] = nil
                 return
             }
-            YSAppDelegate.appDelegate().filesOnDisk.append(download.file.fileDriveIdentifier)
-            _ = download.file.updateFileSize()
+            if download.file.localFileExists()
+            {
+                YSAppDelegate.appDelegate().filesOnDisk.append(download.file.fileDriveIdentifier)
+            }
+            
+            //TODO: multicast delegate?
             YSAppDelegate.appDelegate().playlistDelegate?.downloadDidChange(download, nil)
             YSAppDelegate.appDelegate().playerDelegate?.downloadDidChange(download, nil)
             YSAppDelegate.appDelegate().downloadsDelegate?.downloadDidChange(download, nil)

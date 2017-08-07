@@ -147,7 +147,7 @@ class YSPlayerViewModel: NSObject, YSPlayerViewModelProtocol, AVAudioPlayerDeleg
         {
            if currentPlayingIndex <= files.count
            {
-            return files[currentPlayingIndex]
+                return files[currentPlayingIndex]
             }
             return files.first
         }
@@ -378,11 +378,14 @@ class YSPlayerViewModel: NSObject, YSPlayerViewModelProtocol, AVAudioPlayerDeleg
     {
         if var currentFile = currentFile
         {
+            let isCurrentlyPlaying = isCurrent
             currentFile.isCurrentlyPlaying = isCurrent
+            var intervalSting = currentFile.playedTime
+            var isPlayed = currentFile.isPlayed
             if let player = player
             {
                 let interval = player.currentTime
-                let intervalSting = String(describing: interval)
+                intervalSting = String(describing: interval)
                 currentFile.playedTime = intervalSting
                 
                 let elapsedTime = player.currentTime as Double
@@ -391,12 +394,10 @@ class YSPlayerViewModel: NSObject, YSPlayerViewModelProtocol, AVAudioPlayerDeleg
                 
                 let remainingTimeInt = Int(round(remainingTime))
                 
-                if (remainingTimeInt < 5 && !currentFile.isPlayed)
-                {
-                    currentFile.isPlayed = true
-                }
+                isPlayed = remainingTimeInt < 5 && !currentFile.isPlayed
+                currentFile.isPlayed = isPlayed
             }
-            YSDatabaseManager.update(file: currentFile)
+            YSDatabaseManager.update(fileDriveIdentifier: currentFile.fileDriveIdentifier, isCurrentlyPlaying: isCurrentlyPlaying, playedTime: intervalSting, isPlayed: isPlayed)
         }
     }
 }
