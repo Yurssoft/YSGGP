@@ -199,6 +199,7 @@ extension YSDriveFileDownloader: URLSessionDownloadDelegate
             download.downloadStatus = .downloading(progress: progress)
             let totalSize = ByteCountFormatter.string(fromByteCount: totalBytesExpectedToWrite, countStyle: ByteCountFormatter.CountStyle.binary)
             download.totalSize = totalSize
+            //TODO: crash on exiting view, no download finishing?
             downloads[url] = download
             YSAppDelegate.appDelegate().downloadsDelegate?.downloadDidChange(download, nil)
         }
