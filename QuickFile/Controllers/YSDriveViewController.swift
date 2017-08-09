@@ -18,7 +18,7 @@ class YSDriveViewController: UITableViewController
     weak var toolbarView: YSToolbarView!
     
     var selectedIndexes : [IndexPath] = []
-    //TODO: make relative urls, pagination, logged as, download wifi only, do not delete files from remote even if they are deleted, disallow refreshes in edit
+    //TODO: make relative urls, pagination, logged as, download wifi only, do not delete files from remote even if they are deleted, disallow refreshes in edit, memory leaks, firebase functions?
     var viewModel: YSDriveViewModelProtocol?
     {
         willSet
@@ -273,7 +273,7 @@ extension YSDriveViewController: YSDriveViewModelViewDelegate
     
     func errorDidChange(viewModel: YSDriveViewModelProtocol, error: YSErrorProtocol)
     {
-        if error.errorType == .couldNotGetFileList && error.message == YSConstants.kNoInternetMessage
+        if error.errorType == .couldNotGetFileList && error.systemCode == -1009 //no internet code
         {
             let statusBarMessage = MessageView.viewFromNib(layout: .StatusLine)
             statusBarMessage.backgroundView.backgroundColor = UIColor.orange

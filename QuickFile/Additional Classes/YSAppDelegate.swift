@@ -29,7 +29,7 @@ class YSAppDelegate: UIResponder, UIApplicationDelegate
     var driveTopCoordinator : YSDriveTopCoordinator?
     var backgroundSession : URLSession?
     var backgroundSessionCompletionHandler: (() -> Void)?
-    var fileDownloader : YSDriveFileDownloader?
+    var fileDownloader : YSDriveFileDownloader = YSDriveFileDownloader()
     var searchCoordinator : YSDriveSearchCoordinator?
     var playerCoordinator : YSPlayerCoordinator = YSPlayerCoordinator()
     var filesOnDisk : [String] = []
@@ -67,7 +67,6 @@ class YSAppDelegate: UIResponder, UIApplicationDelegate
         
         log.info("FIRApp, GIDSignIn - configured")
         
-        fileDownloader = YSDriveFileDownloader()
         lookUpAllFilesOnDisk()
         
         log.info("looked Up All Files On Disk")

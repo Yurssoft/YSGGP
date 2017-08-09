@@ -29,9 +29,14 @@ class YSNetworkResponseManager
                 return errorMessage
             }
         }
-        if let er = error
+        if let er = error as NSError?
         {
-            let errorMessage = YSError(errorType: YSErrorType.couldNotGetFileList, messageType: Theme.warning, title: "Warning", message: "Could not get list", buttonTitle: "Try again", debugInfo: er.localizedDescription)
+            var message = "Could not get list"
+            if er.code == -1009
+            {
+                message = er.localizedDescription
+            }
+            let errorMessage = YSError(errorType: YSErrorType.couldNotGetFileList, messageType: Theme.warning, title: "Warning", message: message, buttonTitle: "Try again", debugInfo: er.localizedDescription, systemCode: er.code)
             return errorMessage
         }
         let errorMessage = YSError(errorType: YSErrorType.couldNotGetFileList, messageType: Theme.warning, title: "Error", message: "Unkown error", buttonTitle: "Try again", debugInfo: "UNKOWN ERROR !!! ___---+++111")
@@ -53,9 +58,14 @@ class YSNetworkResponseManager
                 return errorMessage
             }
         }
-        if let er = error
+        if let er = error as NSError?
         {
-            let errorMessage = YSError(errorType: YSErrorType.couldNotDownloadFile, messageType: Theme.error, title: "Error", message: "Could not download file \(fileName)", buttonTitle: "Try again", debugInfo: er.localizedDescription)
+            var message = "Could not download file \(fileName)"
+            if er.code == -1009
+            {
+                message.append(" , \(er.localizedDescription)")
+            }
+            let errorMessage = YSError(errorType: YSErrorType.couldNotDownloadFile, messageType: Theme.error, title: "Error", message: message, buttonTitle: "Try again", debugInfo: er.localizedDescription, systemCode: er.code)
             return errorMessage
         }
         return nil

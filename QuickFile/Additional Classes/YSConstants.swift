@@ -34,7 +34,6 @@ struct YSConstants
     static let kDefaultBarColor = UIColor(red:254/255.0, green:213/255.0, blue:165/255.0, alpha:1.0)
     static let kDriveSearchNavigation = "YSDriveSearchControllerNavigation"
     static let kMessageDuration = SwiftMessages.Duration.automatic
-    static let kNoInternetMessage = "Could not get list, no internet"
 }
 
 enum YSErrorType

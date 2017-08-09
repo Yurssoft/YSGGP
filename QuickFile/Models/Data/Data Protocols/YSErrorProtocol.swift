@@ -17,7 +17,9 @@ protocol YSErrorProtocol : Error
     var message : String { get }
     var buttonTitle : String { get }
     var debugInfo : String { get }
+    var systemCode : Int { get }
     
     func isEmpty() -> Bool
     mutating func update(errorType : YSErrorType, messageType: Theme, title: String, message : String)
+    mutating func update(errorType : YSErrorType, messageType: Theme, title: String, message : String, systemCode: Int)
 }

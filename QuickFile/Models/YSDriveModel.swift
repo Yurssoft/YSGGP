@@ -53,16 +53,16 @@ class YSDriveModel: YSDriveModelProtocol
     
     func download(for file: YSDriveFileProtocol) -> YSDownloadProtocol?
     {
-        return YSAppDelegate.appDelegate().fileDownloader?.download(for: file)
+        return YSAppDelegate.appDelegate().fileDownloader.download(for: file)
     }
     
     func download(_ file : YSDriveFileProtocol)
     {
-        YSAppDelegate.appDelegate().fileDownloader?.download(file: file)
+        YSAppDelegate.appDelegate().fileDownloader.download(file: file)
     }
     
     func stopDownload(_ file : YSDriveFileProtocol)
     {
-        YSAppDelegate.appDelegate().fileDownloader?.cancelDownloading(file: file)
+        YSAppDelegate.appDelegate().fileDownloader.cancelDownloading(file: file)
     }
 }

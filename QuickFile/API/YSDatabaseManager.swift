@@ -184,7 +184,7 @@ class YSDatabaseManager
                         let dbFile = databaseFile.value as! [String : Any]
                         let ysFile = dbFile.toYSFile()
                         ysFile.removeLocalFile()
-                        YSAppDelegate.appDelegate().fileDownloader?.cancelDownloading(file: ysFile)
+                        YSAppDelegate.appDelegate().fileDownloader.cancelDownloading(file: ysFile)
                     }
                 }
                 let error = YSError(errorType: YSErrorType.none, messageType: Theme.success, title: "Deleted", message: "All local downloads deleted", buttonTitle: "GOT IT")
@@ -213,7 +213,7 @@ class YSDatabaseManager
                         if (ysFile.isPlayed)
                         {
                             ysFile.removeLocalFile()
-                            YSAppDelegate.appDelegate().fileDownloader?.cancelDownloading(file: ysFile)
+                            YSAppDelegate.appDelegate().fileDownloader.cancelDownloading(file: ysFile)
                         }
                     }
                 }
