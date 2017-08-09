@@ -71,7 +71,10 @@ extension YSDriveTopCoordinator : YSDriveCoordinatorDelegate
             if let lastCoordinator = driveCoordinators.last
             {
                 lastCoordinator.updateDownloadDelegate()
-                folder = lastCoordinator.folder
+                guard let folderr = lastCoordinator.folder else {
+                    fatalError()
+                }
+                folder = folderr
             }
             else
             {

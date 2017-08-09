@@ -22,7 +22,7 @@ class YSDriveTopViewController: UIViewController
     @IBOutlet fileprivate weak var toolbarViewBottomConstraint : NSLayoutConstraint?
     @IBOutlet fileprivate weak var toolbarView: YSToolbarView?
     @IBOutlet weak var searchButton: UIBarButtonItem!
-    var driveVC : YSDriveViewController?
+    weak var driveVC : YSDriveViewController?
     var shouldShowSearch : Bool = true
     
     weak var driveVCReadyDelegate : YSDriveViewControllerDidFinishedLoading?

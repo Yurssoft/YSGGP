@@ -117,16 +117,16 @@ class YSDriveViewModel: YSDriveViewModelProtocol
     {
         isDownloadingMetadata = true
         model?.getFiles(pageToken: pageTokens.first!, nextPageToken: pageTokens.count > 1 ? pageTokens.last : nil)
-        { (files, error, nextPageToken) in
-            self.isDownloadingMetadata = false
+        { [weak self] (files, error, nextPageToken) in
+            self?.isDownloadingMetadata = false
             completion(files)
-            self.error = error!
+            self?.error = error!
             guard let token = nextPageToken else
             {
-                self.allPagesDownloaded = true
+                self?.allPagesDownloaded = true
                 return
             }
-            self.pageTokens.append(token)
+            self?.pageTokens.append(token)
         }
     }
     

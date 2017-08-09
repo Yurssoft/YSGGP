@@ -18,9 +18,9 @@ protocol YSDriveCoordinatorDelegate: class
 
 class YSDriveCoordinator: NSObject, YSCoordinatorProtocol
 {
-    fileprivate let driveViewController: YSDriveViewController
+    fileprivate weak var driveViewController: YSDriveViewController?
     weak var delegate : YSDriveCoordinatorDelegate?
-    var folder : YSFolder = YSFolder()
+    weak var folder : YSFolder?
     
     init(driveViewController: YSDriveViewController, folder: YSFolder)
     {
@@ -33,20 +33,28 @@ class YSDriveCoordinator: NSObject, YSCoordinatorProtocol
         let viewModel = YSDriveViewModel()
         YSAppDelegate.appDelegate().downloadsDelegate = viewModel
         YSAppDelegate.appDelegate().driveDelegate = viewModel
+        
+        guard let folder = folder else {
+            fatalError()
+        }
         viewModel.model = YSDriveModel(folder: folder)
         viewModel.coordinatorDelegate = self
-        driveViewController.viewModel = viewModel
+        driveViewController?.viewModel = viewModel
     }
     
     func updateDownloadDelegate()
     {
-        YSAppDelegate.appDelegate().downloadsDelegate = driveViewController.viewModel as? YSUpdatingDelegate
+        guard let delegate = driveViewController?.viewModel as? YSUpdatingDelegate else { return }
+        YSAppDelegate.appDelegate().downloadsDelegate = delegate
     }
     
     fileprivate func start(folderID: String,error: YSError?)
     {
         let viewModel =  YSDriveViewModel()
-        driveViewController.viewModel = viewModel
+        driveViewController?.viewModel = viewModel
+        guard let folder = folder else {
+            fatalError()
+        }
         viewModel.model = YSDriveModel(folder: folder)
         viewModel.coordinatorDelegate = self
         if error == nil
