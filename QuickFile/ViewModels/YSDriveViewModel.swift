@@ -204,9 +204,9 @@ class YSDriveViewModel: YSDriveViewModelProtocol
         }
         pageTokens = [YSConstants.kFirstPageToken]
         getFiles
-        { files in
-            self.files = files
-            self.callCompletion(completion)
+        {[weak self]  files in
+            self?.files = files
+            self?.callCompletion(completion)
         }
     }
     
@@ -224,9 +224,9 @@ class YSDriveViewModel: YSDriveViewModelProtocol
             return
         }
         getFiles
-        { (files) in
-            self.files.append(contentsOf: files)
-            self.callCompletion(completion)
+        {[weak self]  (files) in
+            self?.files.append(contentsOf: files)
+            self?.callCompletion(completion)
         }
     }
     

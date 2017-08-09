@@ -8,6 +8,7 @@
 
 import Foundation
 import SwiftMessages
+import SwiftyBeaver
 
 class YSDriveModel: YSDriveModelProtocol
 {
@@ -16,9 +17,9 @@ class YSDriveModel: YSDriveModelProtocol
         return YSCredentialManager.isLoggedIn
     }
     
-    fileprivate var currentFolder : YSFolder = YSFolder()
+    fileprivate weak var currentFolder : YSFolder?
     
-    init(folder: YSFolder)
+    init(folder: YSFolder?)
     {
         currentFolder = folder
     }
@@ -38,16 +39,22 @@ class YSDriveModel: YSDriveModelProtocol
                 ) as String
             url.append("pageToken=\(encodedNextPageToken)&")
         }
-        url.append("corpus=user&orderBy=folder%2Cname&pageSize=\(YSConstants.kPageSize)&q='\(currentFolder.folderID)'+in+parents+and+(mimeType+contains+'folder'+or+mimeType+contains+'audio')+and+trashed%3Dfalse&spaces=drive&fields=nextPageToken%2C+files(id%2C+name%2C+size%2C+mimeType)&key=\(YSConstants.kDriveAPIKey)")
+        guard let folder = currentFolder else
+        {
+            let log = SwiftyBeaver.self
+            log.error("FATAL, no folder")
+            return
+        }
+        url.append("corpus=user&orderBy=folder%2Cname&pageSize=\(YSConstants.kPageSize)&q='\(folder.folderID)'+in+parents+and+(mimeType+contains+'folder'+or+mimeType+contains+'audio')+and+trashed%3Dfalse&spaces=drive&fields=nextPageToken%2C+files(id%2C+name%2C+size%2C+mimeType)&key=\(YSConstants.kDriveAPIKey)")
         YSFilesMetadataDownloader.downloadFilesList(for: url)
         { filesDictionary, error in
             if let err = error
             {
                 let yserror = err as! YSError
-                YSDatabaseManager.offlineFiles(folder: self.currentFolder, yserror, completionHandler)
+                YSDatabaseManager.offlineFiles(folder: folder, yserror, completionHandler)
                 return
             }
-            YSDatabaseManager.save(pageToken: pageToken, remoteFilesDict: filesDictionary!, self.currentFolder, completionHandler)
+            YSDatabaseManager.save(pageToken: pageToken, remoteFilesDict: filesDictionary!, folder, completionHandler)
         }
     }
     

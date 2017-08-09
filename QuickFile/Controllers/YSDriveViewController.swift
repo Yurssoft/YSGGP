@@ -58,6 +58,7 @@ class YSDriveViewController: UITableViewController
         super.viewDidDisappear(animated)
         let log = SwiftyBeaver.self
         log.info("")
+        navigationController?.setIndeterminate(false)
     }
     
     func containingViewControllerViewDidLoad()

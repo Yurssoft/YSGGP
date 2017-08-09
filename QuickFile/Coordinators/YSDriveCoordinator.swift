@@ -20,7 +20,7 @@ class YSDriveCoordinator: NSObject, YSCoordinatorProtocol
 {
     fileprivate weak var driveViewController: YSDriveViewController?
     weak var delegate : YSDriveCoordinatorDelegate?
-    weak var folder : YSFolder?
+    var folder : YSFolder?
     
     init(driveViewController: YSDriveViewController, folder: YSFolder)
     {
