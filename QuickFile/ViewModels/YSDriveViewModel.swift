@@ -40,7 +40,7 @@ class YSDriveViewModel: YSDriveViewModelProtocol
         }
     }
     
-    var coordinatorDelegate: YSDriveViewModelCoordinatorDelegate?
+    weak var coordinatorDelegate: YSDriveViewModelCoordinatorDelegate?
     
     fileprivate var files: [YSDriveFileProtocol] = []
     {

@@ -66,7 +66,7 @@ extension YSDriveSearchCoordinator : YSDriveSearchViewModelCoordinatorDelegate
             let ysFolder = YSFolder()
             ysFolder.folderID = file.fileDriveIdentifier
             ysFolder.folderName = file.fileName
-            driveCoordinator.folder = ysFolder
+            driveCoordinator.folders = [ysFolder]
             driveCoordinator.start(driveTopVC: driveTopVC, shouldShowSearch: false)
         }
     }

@@ -384,9 +384,9 @@
 			isa = PBXGroup;
 			children = (
 				50E5623E1E71BA90004E47A2 /* YSCoordinatorProtocol.swift */,
+				50E562411E71BA90004E47A2 /* YSDriveTopCoordinator.swift */,
 				50E5623F1E71BA90004E47A2 /* YSDriveCoordinator.swift */,
 				50E562401E71BA90004E47A2 /* YSDriveSearchCoordinator.swift */,
-				50E562411E71BA90004E47A2 /* YSDriveTopCoordinator.swift */,
 				50E562421E71BA90004E47A2 /* YSPlayerCoordinator.swift */,
 				50E562431E71BA90004E47A2 /* YSPlaylistCoordinator.swift */,
 				50E562441E71BA90004E47A2 /* YSSettingsCoordinator.swift */,

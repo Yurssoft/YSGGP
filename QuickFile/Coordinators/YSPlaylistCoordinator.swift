@@ -12,15 +12,9 @@ import AVKit
 import AVFoundation
 import SwiftMessages
 
-protocol YSPlaylistCoordinatorDelegate: class
-{
-    func playlistCoordinatorDidRequestToPlayFile(driveVC: YSDriveCoordinator, file: YSDriveFileProtocol)
-}
-
 class YSPlaylistCoordinator: YSCoordinatorProtocol
 {
     fileprivate var playlistViewController: YSPlaylistViewController
-    weak var delegate : YSPlaylistCoordinatorDelegate?
     let navigationController: UINavigationController
     var playerCoordinator : YSPlayerCoordinator?
     

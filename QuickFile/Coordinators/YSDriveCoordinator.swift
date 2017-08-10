@@ -10,7 +10,7 @@ import UIKit
 
 protocol YSDriveCoordinatorDelegate: class
 {
-    func driveCoordinatorDidFinish(driveVC: YSDriveCoordinator, error: YSErrorProtocol?)
+    func driveCoordinatorDidFinish(driveCoordinator: YSDriveCoordinator, error: YSErrorProtocol?)
     func driveCoordinatorDidSelectFile(_ viewModel: YSDriveViewModelProtocol, file: YSDriveFileProtocol)
     func driveCoordinatorDidRequestedLogin()
     func driveViewControllerDidRequestedSearch()
@@ -20,7 +20,7 @@ class YSDriveCoordinator: NSObject, YSCoordinatorProtocol
 {
     fileprivate weak var driveViewController: YSDriveViewController?
     weak var delegate : YSDriveCoordinatorDelegate?
-    var folder : YSFolder?
+    weak var folder : YSFolder?
     
     init(driveViewController: YSDriveViewController, folder: YSFolder)
     {
@@ -79,7 +79,7 @@ extension YSDriveCoordinator: YSDriveViewModelCoordinatorDelegate
     
     func driveViewModelDidFinish()
     {
-        delegate?.driveCoordinatorDidFinish(driveVC: self, error: nil)
+        delegate?.driveCoordinatorDidFinish(driveCoordinator: self, error: nil)
     }
     
     func driveViewControllerDidRequestedSearch()

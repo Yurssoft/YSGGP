@@ -27,10 +27,10 @@ protocol YSPlayerViewModelCoordinatorDelegate: class
 
 protocol YSPlayerViewModelProtocol
 {
-    var playerDelegate: YSPlayerDelegate? { get set }
+    weak var playerDelegate: YSPlayerDelegate? { get set }
     var model: YSPlaylistAndPlayerModelProtocol? { get set }
-    var viewDelegate: YSPlayerViewModelViewDelegate? { get set }
-    var coordinatorDelegate: YSPlayerViewModelCoordinatorDelegate? { get set }
+    weak var viewDelegate: YSPlayerViewModelViewDelegate? { get set }
+    weak var coordinatorDelegate: YSPlayerViewModelCoordinatorDelegate? { get set }
     var error : YSErrorProtocol { get }
     var isPlaying : Bool { get }
     var currentFile: YSDriveFileProtocol? { get }

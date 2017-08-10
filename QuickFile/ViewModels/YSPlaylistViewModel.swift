@@ -30,9 +30,9 @@ class YSPlaylistViewModel : YSPlaylistViewModelProtocol
     
     var folders: [YSDriveFileProtocol] = [YSDriveFileProtocol]()
     
-    var viewDelegate: YSPlaylistViewModelViewDelegate?
+    weak var viewDelegate: YSPlaylistViewModelViewDelegate?
     
-    var coordinatorDelegate: YSPlaylistViewModelCoordinatorDelegate?
+    weak var coordinatorDelegate: YSPlaylistViewModelCoordinatorDelegate?
     
     func numberOfFiles(in folder: Int) -> Int
     {

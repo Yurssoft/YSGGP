@@ -23,7 +23,7 @@ protocol YSSettingsViewModelProtocol
 {
     var isLoggedIn : Bool { get }
     var loggedString : String { get }
-    var coordinatorDelegate: YSSettingsCoordinatorDelegate? { get set }
+    weak var coordinatorDelegate: YSSettingsCoordinatorDelegate? { get set }
     func logOut()
     func deleteAllFiles()
     func deletePlayedFiles()

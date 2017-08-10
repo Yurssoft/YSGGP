@@ -21,6 +21,7 @@ class YSDriveFileTableViewCell: UITableViewCell
     @IBOutlet weak var fileInfoLabel: UILabel!
     @IBOutlet weak var fileImageView: UIImageView!
     weak var delegate: YSDriveFileTableViewCellDelegate?
+    var file: YSDriveFileProtocol?
     
     @IBOutlet weak var downloadButton: PKDownloadButton!
     @IBOutlet weak var titleRightMarginConstraint: NSLayoutConstraint!
@@ -125,7 +126,6 @@ class YSDriveFileTableViewCell: UITableViewCell
         }
     }
     
-    var file: YSDriveFileProtocol?
 }
 
 extension YSDriveFileTableViewCell: PKDownloadButtonDelegate

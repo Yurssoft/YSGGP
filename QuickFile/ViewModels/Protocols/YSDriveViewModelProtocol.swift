@@ -32,8 +32,8 @@ protocol YSDriveViewModelCoordinatorDelegate: class
 protocol YSDriveViewModelProtocol
 {
     var model: YSDriveModelProtocol? { get set }
-    var viewDelegate: YSDriveViewModelViewDelegate? { get set }
-    var coordinatorDelegate: YSDriveViewModelCoordinatorDelegate? { get set}
+    weak var viewDelegate: YSDriveViewModelViewDelegate? { get set }
+    weak var coordinatorDelegate: YSDriveViewModelCoordinatorDelegate? { get set}
     var numberOfFiles: Int { get }
     var isFilesPresent: Bool { get }
     var isLoggedIn: Bool { get }

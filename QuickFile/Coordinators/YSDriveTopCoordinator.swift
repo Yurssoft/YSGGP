@@ -13,9 +13,9 @@ import SwiftMessages
 
 class YSDriveTopCoordinator: YSCoordinatorProtocol
 {
-    fileprivate var driveCoordinators : [YSDriveCoordinator] = []
+    fileprivate var driveCoordinators : Set<YSDriveCoordinator> = Set<YSDriveCoordinator>()
     fileprivate var navigationController: UINavigationController?
-    var folder : YSFolder = YSFolder.rootFolder()
+    var folders : [YSFolder] = [YSFolder.rootFolder()]
     fileprivate var storyboard: UIStoryboard?
     var shouldShowSearch : Bool = true
     
@@ -23,6 +23,7 @@ class YSDriveTopCoordinator: YSCoordinatorProtocol
     
     func start(driveTopVC: YSDriveTopViewController, shouldShowSearch : Bool = true)
     {
+        //TODO: check if folders inited
         driveTopVC.driveVCReadyDelegate = self
         storyboard = driveTopVC.storyboard
         self.shouldShowSearch = shouldShowSearch
@@ -48,39 +49,19 @@ extension YSDriveTopCoordinator : YSDriveViewControllerDidFinishedLoading
     func driveViewControllerDidLoaded(driveVC: YSDriveViewController, navigationController: UINavigationController)
     {
         self.navigationController = navigationController
-        let driveCoordinator = YSDriveCoordinator(driveViewController: driveVC, folder: folder)
+        let driveCoordinator = YSDriveCoordinator(driveViewController: driveVC, folder: folders.last!)
         driveCoordinator.start()
         driveCoordinator.delegate = self
-        driveCoordinators.append(driveCoordinator)
+        driveCoordinators.insert(driveCoordinator)
     }
 }
 
 extension YSDriveTopCoordinator : YSDriveCoordinatorDelegate
 {
-    func driveCoordinatorDidFinish(driveVC: YSDriveCoordinator, error: YSErrorProtocol?)
+    func driveCoordinatorDidFinish(driveCoordinator: YSDriveCoordinator, error: YSErrorProtocol?)
     {
-        if let index = driveCoordinators.index(of: driveVC)
-        {
-            driveCoordinators.remove(at: index)
-            var viewControllers : [UIViewController] = []
-            for i in 0...(navigationController?.childViewControllers.count)! - 1
-            {
-                viewControllers.append((navigationController?.childViewControllers[i])!)
-            }
-            navigationController?.setViewControllers(viewControllers, animated: false)
-            if let lastCoordinator = driveCoordinators.last
-            {
-                lastCoordinator.updateDownloadDelegate()
-                guard let folderr = lastCoordinator.folder else {
-                    fatalError()
-                }
-                folder = folderr
-            }
-            else
-            {
-                folder = YSFolder.rootFolder()
-            }
-        }
+        folders.remove(at: folders.count - 1)
+        driveCoordinators.remove(at: driveCoordinators.index(of: driveCoordinator)!)
     }
     
     func driveCoordinatorDidSelectFile(_ viewModel: YSDriveViewModelProtocol, file: YSDriveFileProtocol)
@@ -108,7 +89,7 @@ extension YSDriveTopCoordinator : YSDriveCoordinatorDelegate
             let ysfolder = YSFolder()
             ysfolder.folderID = file.fileDriveIdentifier
             ysfolder.folderName = file.fileName
-            folder = ysfolder
+            folders.append(ysfolder)
             let driveTopVC = storyboard?.instantiateViewController(withIdentifier: YSDriveTopViewController.nameOfClass) as! YSDriveTopViewController
             driveTopVC.driveVCReadyDelegate = self
             driveTopVC.shouldShowSearch = shouldShowSearch

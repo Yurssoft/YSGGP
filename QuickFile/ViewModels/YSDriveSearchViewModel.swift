@@ -124,11 +124,11 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
         //TODO: if user is typing too fast nextPageToken is wrong
         isDownloadingMetadata = true
         model?.getFiles(for: searchTerm, sectionType: sectionType, nextPageToken: nextPageToken)
-        { (files, nextPageToken, error) in
+        {[weak self] (files, nextPageToken, error) in
             completion(files)
-            self.nextPageToken = nextPageToken
-            self.isDownloadingMetadata = false
-            self.error = error!
+            self?.nextPageToken = nextPageToken
+            self?.isDownloadingMetadata = false
+            self?.error = error!
         }
     }
     
