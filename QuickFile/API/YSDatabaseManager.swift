@@ -110,7 +110,7 @@ class YSDatabaseManager
     {
         if !YSAppDelegate.appDelegate().filesOnDisk.contains(file.fileDriveIdentifier) && file.localFileExists()
         {
-            YSAppDelegate.appDelegate().filesOnDisk.append(file.fileDriveIdentifier)
+            YSAppDelegate.appDelegate().filesOnDisk.insert(file.fileDriveIdentifier)
             var file = file
             _ = file.updateFileSize()
         }

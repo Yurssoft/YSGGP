@@ -157,18 +157,29 @@ extension YSDriveFileDownloader: URLSessionDownloadDelegate
                 return
             }
             let fileManager = FileManager.default
-            
-            try? fileManager.removeItem(at: download.file.localFilePath()!)
+            let log = SwiftyBeaver.self
             
             do
             {
-                try fileManager.copyItem(at: location, to: download.file.localFilePath()!)
+                try fileManager.removeItem(at: download.file.localFilePath()!)
                 //YSDatabaseManager.update(file: download.file)
             }
             catch let error as NSError
             {
+                log.error("Could not delete file from disk: \(error.localizedDescription)")
+            }
+            
+            do
+            {
+                try fileManager.copyItem(at: location, to: download.file.localFilePath()!)
+                log.info("Copied file to disk")
+                YSAppDelegate.appDelegate().filesOnDisk.insert(download.file.fileDriveIdentifier)
+                //YSDatabaseManager.update(file: download.file)
+            }
+            catch let error as NSError
+            {
+                //TODO:what if no memory?
                 try? fileManager.removeItem(at: download.file.localFilePath()!)
-                let log = SwiftyBeaver.self
                 log.error("Could not copy file to disk: \(error.localizedDescription)")
                 
                 let errorMessage = YSError(errorType: YSErrorType.couldNotDownloadFile, messageType: Theme.error, title: "Error", message: "Could not copy file \(download.file.fileName)", buttonTitle: "Try again", debugInfo: error.localizedDescription)
@@ -176,10 +187,6 @@ extension YSDriveFileDownloader: URLSessionDownloadDelegate
                 YSAppDelegate.appDelegate().downloadsDelegate?.downloadDidChange(download, errorMessage)
                 downloads[url] = nil
                 return
-            }
-            if download.file.localFileExists()
-            {
-                YSAppDelegate.appDelegate().filesOnDisk.append(download.file.fileDriveIdentifier)
             }
             
             //TODO: multicast delegate?

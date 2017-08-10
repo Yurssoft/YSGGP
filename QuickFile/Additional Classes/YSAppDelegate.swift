@@ -32,7 +32,7 @@ class YSAppDelegate: UIResponder, UIApplicationDelegate
     var fileDownloader : YSDriveFileDownloader = YSDriveFileDownloader()
     var searchCoordinator : YSDriveSearchCoordinator?
     var playerCoordinator : YSPlayerCoordinator = YSPlayerCoordinator()
-    var filesOnDisk : [String] = []
+    var filesOnDisk : Set<String> = Set<String>()
     
     weak var downloadsDelegate: YSUpdatingDelegate?
     weak var playlistDelegate: YSUpdatingDelegate?
@@ -138,7 +138,7 @@ class YSAppDelegate: UIResponder, UIApplicationDelegate
             let directoryContents = try FileManager.default.contentsOfDirectory(at: documentsUrl, includingPropertiesForKeys: nil, options: [])
             let mp3Files = directoryContents.filter{ $0.pathExtension == "mp3" }
             let mp3FileNames = mp3Files.map{ $0.deletingPathExtension().lastPathComponent }
-            filesOnDisk = mp3FileNames
+            filesOnDisk = Set<String>().union(mp3FileNames)
         }
         catch let error as NSError
         {
