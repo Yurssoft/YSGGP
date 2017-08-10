@@ -33,10 +33,6 @@ class YSDriveCoordinator: NSObject, YSCoordinatorProtocol
         let viewModel = YSDriveViewModel()
         YSAppDelegate.appDelegate().downloadsDelegate = viewModel
         YSAppDelegate.appDelegate().driveDelegate = viewModel
-        
-        guard let folder = folder else {
-            fatalError()
-        }
         viewModel.model = YSDriveModel(folder: folder)
         viewModel.coordinatorDelegate = self
         driveViewController?.viewModel = viewModel
@@ -52,9 +48,6 @@ class YSDriveCoordinator: NSObject, YSCoordinatorProtocol
     {
         let viewModel =  YSDriveViewModel()
         driveViewController?.viewModel = viewModel
-        guard let folder = folder else {
-            fatalError()
-        }
         viewModel.model = YSDriveModel(folder: folder)
         viewModel.coordinatorDelegate = self
         if error == nil
