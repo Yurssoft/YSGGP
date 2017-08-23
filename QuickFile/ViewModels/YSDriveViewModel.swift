@@ -113,6 +113,7 @@ class YSDriveViewModel: YSDriveViewModelProtocol
         isDownloadingMetadata = true
         model?.getFiles(pageToken: pageTokens.first!, nextPageToken: pageTokens.count > 1 ? pageTokens.last : nil)
         { [weak self] (files, error, nextPageToken) in
+            //TODO:fix showing isDownloadingMetadata and fix no more data when next page token is nil
             self?.isDownloadingMetadata = false
             self?.error = error!
             completion(files)

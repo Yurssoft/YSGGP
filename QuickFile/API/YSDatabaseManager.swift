@@ -354,6 +354,7 @@ class YSDatabaseManager
     
     private class func callCompletionHandler(nextPageToken: String?, _ completionHandler: AllFilesCompletionHandler?, files : [YSDriveFileProtocol], _ error: YSError)
     {
+        //TODO:if we here call in main, remove main here or elsewhere
         DispatchQueue.main.asyncAfter(deadline: .now() + completionBlockDelay)
         {
             completionHandler!(files, error, nextPageToken)

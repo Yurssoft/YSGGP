@@ -131,7 +131,6 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
 
     fileprivate func getFiles(_ completion: @escaping FilesCompletionHandler)
     {
-        //TODO: if user is typing too fast nextPageToken is wrong
         isDownloadingMetadata = true
         model?.getFiles(for: searchTerm, sectionType: sectionType, nextPageToken: nextPageToken)
         {[weak self] (files, nextPageToken, error) in
