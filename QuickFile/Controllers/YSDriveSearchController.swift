@@ -26,6 +26,7 @@ class YSDriveSearchController : UITableViewController
     }
     
     let searchController = UISearchController(searchResultsController: nil)
+    fileprivate var pendingRequestForSearchModel: DispatchWorkItem?
     
     override func viewDidLoad()
     {
@@ -234,8 +235,15 @@ extension YSDriveSearchController : UISearchResultsUpdating
 {
     func updateSearchResults(for searchController: UISearchController)
     {
-        guard var viewModel = viewModel, let searchText = searchController.searchBar.text, searchText.characters.count > 1 else { return }
-        viewModel.searchTerm = searchText
+        pendingRequestForSearchModel?.cancel()
+        guard let viewModel1 = viewModel as? YSDriveSearchViewModel, let searchText = searchController.searchBar.text, searchText.characters.count > 1 else { return }
+        // Wrap our request to viewModel in a work item
+        let requestWorkItem = DispatchWorkItem { [weak viewModel1] in
+            guard let viewModel2 = viewModel1 else { return }
+            viewModel2.searchTerm = searchText
+        }
+        pendingRequestForSearchModel = requestWorkItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(750), execute: requestWorkItem)
     }
 }
 
@@ -243,8 +251,15 @@ extension YSDriveSearchController : UISearchBarDelegate
 {
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int)
     {
+        pendingRequestForSearchModel?.cancel()
         let section = YSSearchSectionType(rawValue: searchBar.scopeButtonTitles![selectedScope])
-        guard let sectionType = section, var viewModel = viewModel else { return }
-        viewModel.sectionType = sectionType
+        guard let sectionType = section, let viewModel1 = viewModel as? YSDriveSearchViewModel else { return }
+        // Wrap our request to viewModel in a work item
+        let requestWorkItem = DispatchWorkItem { [weak viewModel1] in
+            guard let viewModel2 = viewModel1 else { return }
+            viewModel2.sectionType = sectionType
+        }
+        pendingRequestForSearchModel = requestWorkItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(750), execute: requestWorkItem)
     }
 }
