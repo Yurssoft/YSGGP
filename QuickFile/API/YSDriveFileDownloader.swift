@@ -23,6 +23,7 @@ class YSDriveFileDownloader : NSObject
     {
         session = URLSession()
         sessionQueue = OperationQueue()
+        sessionQueue.maxConcurrentOperationCount = 1
         super.init()
         
         let configuration = URLSessionConfiguration.background(withIdentifier: "com.yurssoft.YSGGP.drive_background_file_downloader_session")
@@ -162,7 +163,6 @@ extension YSDriveFileDownloader: URLSessionDownloadDelegate
             do
             {
                 try fileManager.removeItem(at: download.file.localFilePath()!)
-                //YSDatabaseManager.update(file: download.file)
             }
             catch let error as NSError
             {
@@ -174,11 +174,9 @@ extension YSDriveFileDownloader: URLSessionDownloadDelegate
                 try fileManager.copyItem(at: location, to: download.file.localFilePath()!)
                 log.info("Copied file to disk")
                 YSAppDelegate.appDelegate().filesOnDisk.insert(download.file.fileDriveIdentifier)
-                //YSDatabaseManager.update(file: download.file)
             }
             catch let error as NSError
             {
-                //TODO:what if no memory?
                 try? fileManager.removeItem(at: download.file.localFilePath()!)
                 log.error("Could not copy file to disk: \(error.localizedDescription)")
                 
@@ -189,7 +187,6 @@ extension YSDriveFileDownloader: URLSessionDownloadDelegate
                 return
             }
             
-            //TODO: multicast delegate?
             YSAppDelegate.appDelegate().playlistDelegate?.downloadDidChange(download, nil)
             YSAppDelegate.appDelegate().playerDelegate?.downloadDidChange(download, nil)
             YSAppDelegate.appDelegate().downloadsDelegate?.downloadDidChange(download, nil)
@@ -206,7 +203,6 @@ extension YSDriveFileDownloader: URLSessionDownloadDelegate
             download.downloadStatus = .downloading(progress: progress)
             let totalSize = ByteCountFormatter.string(fromByteCount: totalBytesExpectedToWrite, countStyle: ByteCountFormatter.CountStyle.binary)
             download.totalSize = totalSize
-            //TODO: crash on exiting view, no download finishing?
             downloads[url] = download
             YSAppDelegate.appDelegate().downloadsDelegate?.downloadDidChange(download, nil)
         }
