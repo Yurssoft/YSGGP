@@ -72,6 +72,8 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
         }
     }
     
+    var allPagesDownloaded : Bool = false
+    
     func subscribeToDownloadingProgress()
     {
         coordinatorDelegate?.subscribeToDownloadingProgress()
@@ -79,22 +81,30 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
     
     func refreshFiles(_ completion: @escaping () -> Swift.Void)
     {
-        guard !isDownloadingMetadata else { return }
+        guard !isDownloadingMetadata else
+        {
+            callCompletion(completion)
+            return
+        }
         nextPageToken = nil
         getFiles
-        { (files) in
-            self.files = files
-            completion()
+        {[weak self]  (files) in
+            self?.files = files
+            self?.callCompletion(completion)
         }
     }
     
     func getNextPartOfFiles(_ completion: @escaping () -> Swift.Void)
     {
-        guard nextPageToken != nil, !isDownloadingMetadata else { return }
+        guard nextPageToken != nil, !isDownloadingMetadata else
+        {
+            callCompletion(completion)
+            return
+        }
         getFiles
-        { (files) in
-            self.files.append(contentsOf: files)
-            completion()
+        {[weak self]  (files) in
+            self?.files.append(contentsOf: files)
+            self?.callCompletion(completion)
         }
     }
     
@@ -125,10 +135,11 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
         isDownloadingMetadata = true
         model?.getFiles(for: searchTerm, sectionType: sectionType, nextPageToken: nextPageToken)
         {[weak self] (files, nextPageToken, error) in
-            completion(files)
             self?.nextPageToken = nextPageToken
             self?.isDownloadingMetadata = false
             self?.error = error!
+            self?.allPagesDownloaded = nextPageToken == nil
+            completion(files)
         }
     }
     

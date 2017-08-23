@@ -11,7 +11,6 @@ import Foundation
 protocol YSDriveViewModelViewDelegate: class
 {
     func filesDidChange(viewModel: YSDriveViewModelProtocol)
-    func allPagesDownloaded(viewModel: YSDriveViewModelProtocol)
     func metadataDownloadStatusDidChange(viewModel: YSDriveViewModelProtocol)
     func errorDidChange(viewModel: YSDriveViewModelProtocol, error: YSErrorProtocol)
     func downloadErrorDidChange(viewModel: YSDriveViewModelProtocol, error: YSErrorProtocol, download : YSDownloadProtocol)

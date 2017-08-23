@@ -71,14 +71,9 @@ class YSDriveViewModel: YSDriveViewModelProtocol
         return files.count
     }
     
-    fileprivate var pageTokens: [String] = [YSConstants.kFirstPageToken]
     var allPagesDownloaded : Bool = false
-    {
-        didSet
-        {
-            viewDelegate?.allPagesDownloaded(viewModel: self)
-        }
-    }
+    
+    fileprivate var pageTokens: [String] = [YSConstants.kFirstPageToken]
     
     func file(at index: Int) -> YSDriveFileProtocol?
     {
@@ -119,8 +114,8 @@ class YSDriveViewModel: YSDriveViewModelProtocol
         model?.getFiles(pageToken: pageTokens.first!, nextPageToken: pageTokens.count > 1 ? pageTokens.last : nil)
         { [weak self] (files, error, nextPageToken) in
             self?.isDownloadingMetadata = false
-            completion(files)
             self?.error = error!
+            completion(files)
             guard let token = nextPageToken else
             {
                 self?.allPagesDownloaded = true
@@ -227,14 +222,6 @@ class YSDriveViewModel: YSDriveViewModelProtocol
         {[weak self]  (files) in
             self?.files.append(contentsOf: files)
             self?.callCompletion(completion)
-        }
-    }
-    
-    func callCompletion(_ completion: @escaping () -> Swift.Void)
-    {
-        DispatchQueue.main.async
-        {
-            completion()
         }
     }
     

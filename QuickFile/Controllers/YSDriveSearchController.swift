@@ -41,17 +41,25 @@ class YSDriveSearchController : UITableViewController
         let nib = UINib(nibName: YSDriveFileTableViewCell.nameOfClass, bundle: bundle)
         tableView.register(nib, forCellReuseIdentifier: YSDriveFileTableViewCell.nameOfClass)
         
-        tableView.mj_footer = MJRefreshAutoNormalFooter.init
+        let footer = MJRefreshAutoNormalFooter.init
         { [weak self] () -> Void in
-            guard let viewModel = self?.viewModel else { return }
-            viewModel.getNextPartOfFiles
+            guard let viewModel = self?.viewModel as? YSDriveSearchViewModel else
             {
-                DispatchQueue.main.async
+                self?.tableView.mj_footer.endRefreshing()
+                return
+            }
+            viewModel.getNextPartOfFiles
+            { [weak viewModel] in
+                guard let viewModel = viewModel, viewModel.allPagesDownloaded else
                 {
                     self?.tableView.mj_footer.endRefreshing()
+                    return
                 }
+                self?.tableView.mj_footer.endRefreshingWithNoMoreData()
             }
         }
+        footer?.isAutomaticallyHidden = true
+        tableView.mj_footer = footer
         let log = SwiftyBeaver.self
         log.info("")
     }
@@ -145,7 +153,7 @@ extension YSDriveSearchController : YSDriveSearchViewModelViewDelegate
     {
         DispatchQueue.main.async
         {
-            if !viewModel.isDownloadingMetadata
+            if !viewModel.isDownloadingMetadata && !viewModel.allPagesDownloaded
             {
                 self.tableView.mj_footer.endRefreshing()
             }

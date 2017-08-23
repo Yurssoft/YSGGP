@@ -73,13 +73,19 @@ class YSDriveViewController: UITableViewController
     {
         let footer = MJRefreshAutoNormalFooter.init
         { [weak self] () -> Void in
-            guard let viewModel = self?.viewModel else { return }
-            viewModel.getNextPartOfFiles
+            guard let viewModel = self?.viewModel as? YSDriveViewModel else
             {
-                DispatchQueue.main.async
+                self?.tableView.mj_footer.endRefreshing()
+                return
+            }
+            viewModel.getNextPartOfFiles
+            { [weak viewModel] in
+                guard let viewModel = viewModel, viewModel.allPagesDownloaded else
                 {
                     self?.tableView.mj_footer.endRefreshing()
+                    return
                 }
+                self?.tableView.mj_footer.endRefreshingWithNoMoreData()
             }
         }
         footer?.isAutomaticallyHidden = true
@@ -87,13 +93,16 @@ class YSDriveViewController: UITableViewController
         
         tableView.mj_header = MJRefreshNormalHeader.init(refreshingBlock:
         { [weak self] () -> Void in
-            guard let viewModel = self?.viewModel else { return }
+            guard let viewModel = self?.viewModel else
+            {
+                self?.tableView.mj_header.endRefreshing()
+                return
+            }
             viewModel.refreshFiles
             {
-                DispatchQueue.main.async
-                {
-                    self?.tableView.mj_header.endRefreshing()
-                }
+                self?.tableView.mj_header.endRefreshing()
+                //set state to idle to have opportunity to fetch more data after user scrolled to bottom
+                self?.tableView.mj_footer.state = .idle
             }
         })
     }
@@ -227,18 +236,6 @@ extension YSDriveViewController: YSDriveViewModelViewDelegate
         DispatchQueue.main.async
         {
             [weak self] in self?.navigationController?.setIndeterminate(viewModel.isDownloadingMetadata)
-        }
-    }
-    
-    func allPagesDownloaded(viewModel: YSDriveViewModelProtocol)
-    {
-        DispatchQueue.main.async
-        { [weak self] in
-            guard let viewModel = self?.viewModel else { return }
-            if viewModel.allPagesDownloaded
-            {
-                self?.tableView.mj_footer.endRefreshingWithNoMoreData()
-            }
         }
     }
     

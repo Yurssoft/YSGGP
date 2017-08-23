@@ -42,6 +42,7 @@ protocol YSDriveSearchViewModelProtocol
     var error : YSErrorProtocol { get }
     var searchTerm : String { get set }
     var sectionType: YSSearchSectionType { get set }
+    var allPagesDownloaded : Bool { get }
     
     func subscribeToDownloadingProgress()
     func file(at index: Int) -> YSDriveFileProtocol?
