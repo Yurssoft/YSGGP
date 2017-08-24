@@ -264,6 +264,7 @@ extension YSDriveViewController: YSDriveViewModelViewDelegate
         messageConfig.duration = YSConstants.kMessageDuration
         messageConfig.ignoreDuplicates = false
         messageConfig.presentationContext = .window(windowLevel: UIWindowLevelStatusBar)
+        SwiftMessages.hide(id: YSConstants.kOffineStatusBarMessageID)
         SwiftMessages.show(config: messageConfig, view: message)
     }
     
@@ -284,6 +285,7 @@ extension YSDriveViewController: YSDriveViewModelViewDelegate
             messageConfig.presentationContext = .window(windowLevel: UIWindowLevelNormal)
             messageConfig.preferredStatusBarStyle = .lightContent
             messageConfig.duration = .forever
+            statusBarMessage.id = YSConstants.kOffineStatusBarMessageID
             SwiftMessages.show(config: messageConfig, view: statusBarMessage)
             return
         }
@@ -322,6 +324,7 @@ extension YSDriveViewController: YSDriveViewModelViewDelegate
         messageConfig.duration = YSConstants.kMessageDuration
         messageConfig.ignoreDuplicates = false
         messageConfig.presentationContext = .window(windowLevel: UIWindowLevelStatusBar)
+        SwiftMessages.hide(id: YSConstants.kOffineStatusBarMessageID)
         SwiftMessages.show(config: messageConfig, view: message)
     }
     
