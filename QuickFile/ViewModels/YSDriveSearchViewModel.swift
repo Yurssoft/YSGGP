@@ -171,10 +171,7 @@ extension YSDriveSearchViewModel : YSUpdatingDelegate
 {
     internal func filesDidChange()
     {
-        DispatchQueue.main.async
-        {
-            self.viewDelegate?.filesDidChange(viewModel: self)
-        }
+        self.viewDelegate?.filesDidChange(viewModel: self)
     }
 
     func downloadDidChange(_ download : YSDownloadProtocol,_ error: YSErrorProtocol?)

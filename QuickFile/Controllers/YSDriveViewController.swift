@@ -234,8 +234,12 @@ extension YSDriveViewController: YSDriveViewModelViewDelegate
     func metadataDownloadStatusDidChange(viewModel: YSDriveViewModelProtocol)
     {
         DispatchQueue.main.async
-        {
-            [weak self] in self?.navigationController?.setIndeterminate(viewModel.isDownloadingMetadata)
+        { [weak self] in
+            self?.navigationController?.setIndeterminate(viewModel.isDownloadingMetadata)
+            if viewModel.allPagesDownloaded && !viewModel.isDownloadingMetadata
+            {
+                self?.tableView.mj_footer.endRefreshingWithNoMoreData()
+            }
         }
     }
     

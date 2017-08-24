@@ -113,15 +113,15 @@ class YSDriveViewModel: YSDriveViewModelProtocol
         isDownloadingMetadata = true
         model?.getFiles(pageToken: pageTokens.first!, nextPageToken: pageTokens.count > 1 ? pageTokens.last : nil)
         { [weak self] (files, error, nextPageToken) in
-            //TODO:fix showing isDownloadingMetadata and fix no more data when next page token is nil
-            self?.isDownloadingMetadata = false
             self?.error = error!
             completion(files)
+            self?.isDownloadingMetadata = false
             guard let token = nextPageToken else
             {
                 self?.allPagesDownloaded = true
                 return
             }
+            self?.allPagesDownloaded = false
             self?.pageTokens.append(token)
         }
     }
@@ -237,23 +237,17 @@ extension YSDriveViewModel : YSUpdatingDelegate
 {
     func downloadDidChange(_ download : YSDownloadProtocol,_ error: YSErrorProtocol?)
     {
-        DispatchQueue.main.async
+        if let error = error
         {
-            if let error = error
-            {
-                self.viewDelegate?.downloadErrorDidChange(viewModel: self, error: error, download: download)
-            }
-            let index = self.files.index(where: {$0.fileDriveIdentifier == download.file.fileDriveIdentifier})
-            guard let indexx = index, self.files.count > indexx else { return }
-            self.viewDelegate?.reloadFileDownload(at: indexx, viewModel: self)
+            self.viewDelegate?.downloadErrorDidChange(viewModel: self, error: error, download: download)
         }
+        let index = self.files.index(where: {$0.fileDriveIdentifier == download.file.fileDriveIdentifier})
+        guard let indexx = index, self.files.count > indexx else { return }
+        self.viewDelegate?.reloadFileDownload(at: indexx, viewModel: self)
     }
     
     func filesDidChange()
     {
-        DispatchQueue.main.async
-        {
-            self.viewDelegate?.filesDidChange(viewModel: self)
-        }
+        self.viewDelegate?.filesDidChange(viewModel: self)
     }
 }

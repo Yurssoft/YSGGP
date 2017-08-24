@@ -20,7 +20,7 @@ protocol YSUpdatingDelegate: class
     func filesDidChange()
 }
 
-//TODO: if we download file from search show it in playlist, when deleting downloads delete all from disk
+//TODO: if we download file from search show it in playlist, when deleting downloads delete all from disk, show all downloads in playlist
 
 @UIApplicationMain
 class YSAppDelegate: UIResponder, UIApplicationDelegate
