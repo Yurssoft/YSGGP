@@ -17,8 +17,6 @@ typealias AllFilesAndCurrentPlayingCompletionHandler = ([YSDriveFileProtocol], Y
 
 class YSDatabaseManager
 {
-    private static let completionBlockDelay = 0.3
-    
     class func save(pageToken: String, remoteFilesDict: [String : Any],_ folder : YSFolder, _ completionHandler: @escaping AllFilesCompletionHandler)
     {
         if let ref = referenceForCurrentUser()
@@ -354,8 +352,7 @@ class YSDatabaseManager
     
     private class func callCompletionHandler(nextPageToken: String?, _ completionHandler: AllFilesCompletionHandler?, files : [YSDriveFileProtocol], _ error: YSError)
     {
-        //TODO:if we here call in main, remove main here or elsewhere
-        DispatchQueue.main.asyncAfter(deadline: .now() + completionBlockDelay)
+        DispatchQueue.main.async
         {
             completionHandler!(files, error, nextPageToken)
         }

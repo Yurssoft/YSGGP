@@ -18,7 +18,6 @@ class YSDriveViewController: UITableViewController
     weak var toolbarView: YSToolbarView!
     
     var selectedIndexes : [IndexPath] = []
-    //TODO: make relative urls, pagination, logged as, download wifi only, do not delete files from remote even if they are deleted, disallow refreshes in edit, memory leaks, firebase functions?, why is error is not displayed deep in drive?, folders leaks
     var viewModel: YSDriveViewModelProtocol?
     {
         willSet
@@ -73,7 +72,7 @@ class YSDriveViewController: UITableViewController
     {
         let footer = MJRefreshAutoNormalFooter.init
         { [weak self] () -> Void in
-            guard let viewModel = self?.viewModel as? YSDriveViewModel else
+            guard let viewModel = self?.viewModel as? YSDriveViewModel, let isEditing = self?.isEditing, !isEditing else
             {
                 self?.tableView.mj_footer.endRefreshing()
                 return
@@ -93,7 +92,7 @@ class YSDriveViewController: UITableViewController
         
         tableView.mj_header = MJRefreshNormalHeader.init(refreshingBlock:
         { [weak self] () -> Void in
-            guard let viewModel = self?.viewModel else
+            guard let viewModel = self?.viewModel as? YSDriveViewModel, let isEditing = self?.isEditing, !isEditing else
             {
                 self?.tableView.mj_header.endRefreshing()
                 return

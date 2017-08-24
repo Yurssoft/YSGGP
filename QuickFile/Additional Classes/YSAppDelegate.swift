@@ -20,7 +20,7 @@ protocol YSUpdatingDelegate: class
     func filesDidChange()
 }
 
-//TODO: if we download file from search show it in playlist, when deleting downloads delete all from disk, show all downloads in playlist
+//TODO: if we download file from search show it in playlist, when deleting downloads delete all from disk, show all downloads in playlist, logged as, download wifi only, memory leaks, firebase functions?, folders leaks
 
 @UIApplicationMain
 class YSAppDelegate: UIResponder, UIApplicationDelegate
