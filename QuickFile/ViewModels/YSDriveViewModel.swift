@@ -189,20 +189,20 @@ class YSDriveViewModel: YSDriveViewModelProtocol
     {
         if !isLoggedIn
         {
-            callCompletion(completion)
+            completion()
             showNotLoggedInMessage()
             return
         }
         guard !isDownloadingMetadata else
         {
-            callCompletion(completion)
+            completion()
             return
         }
         pageTokens = [YSConstants.kFirstPageToken]
         getFiles
         {[weak self]  files in
             self?.files = files
-            self?.callCompletion(completion)
+            completion()
         }
     }
     
@@ -210,19 +210,19 @@ class YSDriveViewModel: YSDriveViewModelProtocol
     {
         if !isLoggedIn
         {
-            callCompletion(completion)
+            completion()
             showNotLoggedInMessage()
             return
         }
         guard !isDownloadingMetadata, pageTokens.count > 1 else
         {
-            callCompletion(completion)
+            completion()
             return
         }
         getFiles
         {[weak self]  (files) in
             self?.files.append(contentsOf: files)
-            self?.callCompletion(completion)
+            completion()
         }
     }
     

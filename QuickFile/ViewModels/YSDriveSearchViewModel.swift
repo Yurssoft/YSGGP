@@ -83,7 +83,7 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
     {
         guard !isDownloadingMetadata else
         {
-            callCompletion(completion)
+            completion()
             return
         }
         nextPageToken = nil
@@ -98,7 +98,7 @@ class YSDriveSearchViewModel: YSDriveSearchViewModelProtocol
     {
         guard nextPageToken != nil, !isDownloadingMetadata else
         {
-            callCompletion(completion)
+            completion()
             return
         }
         getFiles
