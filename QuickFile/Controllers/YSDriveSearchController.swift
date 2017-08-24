@@ -235,6 +235,7 @@ extension YSDriveSearchController : UISearchResultsUpdating
 {
     func updateSearchResults(for searchController: UISearchController)
     {
+        //TODO:what about download task? cancel!
         pendingRequestForSearchModel?.cancel()
         guard let viewModel1 = viewModel as? YSDriveSearchViewModel, let searchText = searchController.searchBar.text, searchText.characters.count > 1 else { return }
         // Wrap our request to viewModel in a work item
