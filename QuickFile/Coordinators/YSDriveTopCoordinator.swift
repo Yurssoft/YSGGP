@@ -13,7 +13,7 @@ import SwiftMessages
 
 class YSDriveTopCoordinator: YSCoordinatorProtocol
 {
-    fileprivate var driveCoordinators : Set<YSDriveCoordinator> = Set<YSDriveCoordinator>()
+    var driveCoordinators : Set<YSDriveCoordinator> = Set<YSDriveCoordinator>()
     fileprivate var navigationController: UINavigationController?
     var folders : [YSFolder] = [YSFolder.rootFolder()]
     fileprivate var storyboard: UIStoryboard?

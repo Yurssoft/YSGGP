@@ -74,6 +74,8 @@ extension YSDriveSearchCoordinator : YSDriveSearchViewModelCoordinatorDelegate
     func searchViewModelDidFinish()
     {
         YSAppDelegate.appDelegate().searchCoordinator = nil
+        guard let coordinators = YSAppDelegate.appDelegate().driveTopCoordinator?.driveCoordinators else { return }
+        coordinators[coordinators.index(coordinators.startIndex, offsetBy: coordinators.count - 1)].updateDownloadDelegate()
     }
     
     func subscribeToDownloadingProgress()
